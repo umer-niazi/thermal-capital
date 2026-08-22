@@ -1,0 +1,272 @@
+[
+  {
+    "site_id": "TX-DFW-01",
+    "display_name": "Alliance Texas Logistics & Technology Park",
+    "city": "Fort Worth",
+    "submarket": "DFW North / Alliance",
+    "market_cluster": "DFW / North Texas",
+    "archetype": "Masterplanned Logistics & Hyperscale Corridor",
+    "latitude": 32.9600,
+    "longitude": -97.3100,
+    "area_acres": 65.0,
+    "target_capacity_mw": 90.0,
+    "data_status": "measured",
+    "data_completeness": "full_measured",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-97.3180, 32.9550],
+          [-97.3020, 32.9550],
+          [-97.3020, 32.9650],
+          [-97.3180, 32.9650],
+          [-97.3180, 32.9550]
+        ]
+      ]
+    },
+    "notes": "Major North Texas logistics hub and inland port with heavy warehouse coverage, extensive concrete paving, and strong regional transmission grid access."
+  },
+  {
+    "site_id": "TX-DFW-02",
+    "display_name": "Midlothian Power & Data Center Campus",
+    "city": "Midlothian",
+    "submarket": "DFW South / Ellis County",
+    "market_cluster": "DFW / North Texas",
+    "archetype": "Hyperscale Data Center & Power Substation Corridor",
+    "latitude": 32.4850,
+    "longitude": -96.9950,
+    "area_acres": 80.0,
+    "target_capacity_mw": 120.0,
+    "data_status": "measured",
+    "data_completeness": "enriched",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-97.0050, 32.4800],
+          [-96.9850, 32.4800],
+          [-96.9850, 32.4900],
+          [-97.0050, 32.4900],
+          [-97.0050, 32.4800]
+        ]
+      ]
+    },
+    "notes": "Emerging South DFW hyperscale campus adjacent to 345kV transmission interconnects with mixed open grassland and lower local UHI retention than urban DFW core."
+  },
+  {
+    "site_id": "TX-HOU-01",
+    "display_name": "Houston Ship Channel Industrial Logistics Hub",
+    "city": "Houston",
+    "submarket": "East Houston / Port & Ship Channel",
+    "market_cluster": "Gulf Coast / Houston",
+    "archetype": "Heavy Coastal Industrial & Petrochemical Corridor",
+    "latitude": 29.7400,
+    "longitude": -95.1400,
+    "area_acres": 70.0,
+    "target_capacity_mw": 80.0,
+    "data_status": "measured",
+    "data_completeness": "full_measured",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-95.1500, 29.7350],
+          [-95.1300, 29.7350],
+          [-95.1300, 29.7450],
+          [-95.1500, 29.7450],
+          [-95.1500, 29.7350]
+        ]
+      ]
+    },
+    "notes": "Dense coastal heavy-industrial corridor with ultra-high summer humidity (peak wet-bulb 26.3°C), continuous maritime boundary layer, and elevated nighttime floor (27.7°C)."
+  },
+  {
+    "site_id": "TX-HOU-02",
+    "display_name": "Katy Energy & Logistics Infrastructure Park",
+    "city": "Katy",
+    "submarket": "West Houston / Katy I-10",
+    "market_cluster": "Gulf Coast / Houston",
+    "archetype": "Suburban Logistics & Commercial Technology Park",
+    "latitude": 29.7850,
+    "longitude": -95.8200,
+    "area_acres": 55.0,
+    "target_capacity_mw": 75.0,
+    "data_status": "measured",
+    "data_completeness": "enriched",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-95.8300, 29.7800],
+          [-95.8100, 29.7800],
+          [-95.8100, 29.7900],
+          [-95.8300, 29.7900],
+          [-95.8300, 29.7800]
+        ]
+      ]
+    },
+    "notes": "West Houston I-10 growth corridor with modern logistics developments, moderate canopy, and suburban urban-heat-island transition."
+  },
+  {
+    "site_id": "TX-AUS-01",
+    "display_name": "Austin Silicon Hills Semiconductor Campus",
+    "city": "Austin",
+    "submarket": "East Austin / Colorado River Corridor",
+    "market_cluster": "Central Texas Technology Corridor",
+    "archetype": "Semiconductor Manufacturing & Advanced Tech Hub",
+    "latitude": 30.2200,
+    "longitude": -97.6300,
+    "area_acres": 60.0,
+    "target_capacity_mw": 85.0,
+    "data_status": "measured",
+    "data_completeness": "full_measured",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-97.6400, 30.2150],
+          [-97.6200, 30.2150],
+          [-97.6200, 30.2250],
+          [-97.6400, 30.2250],
+          [-97.6400, 30.2150]
+        ]
+      ]
+    },
+    "notes": "Central Texas tech corridor along SH-130 toll road near major advanced semiconductor manufacturing with balanced diurnal swing and moderate cooling burden."
+  },
+  {
+    "site_id": "TX-SAT-01",
+    "display_name": "San Antonio Westover Hills Data Center Cluster",
+    "city": "San Antonio",
+    "submarket": "West San Antonio / Westover Hills",
+    "market_cluster": "Central Texas Technology Corridor",
+    "archetype": "Established Mission-Critical Data Center Park",
+    "latitude": 29.4400,
+    "longitude": -98.6600,
+    "area_acres": 50.0,
+    "target_capacity_mw": 70.0,
+    "data_status": "measured",
+    "data_completeness": "enriched",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-98.6700, 29.4350],
+          [-98.6500, 29.4350],
+          [-98.6500, 29.4450],
+          [-98.6700, 29.4450],
+          [-98.6700, 29.4350]
+        ]
+      ]
+    },
+    "notes": "South Central Texas primary mission-critical data center cluster with limestone terrain, robust redundant substation infrastructure, and moderate heat persistence."
+  },
+  {
+    "site_id": "TX-ELP-01",
+    "display_name": "El Paso Desert Borderplex Industrial Gateway",
+    "city": "El Paso",
+    "submarket": "East El Paso / Butterfield Trail",
+    "market_cluster": "West Texas & Borderplex",
+    "archetype": "High-Altitude Arid Desert Industrial Zone",
+    "latitude": 31.7400,
+    "longitude": -106.2800,
+    "area_acres": 90.0,
+    "target_capacity_mw": 110.0,
+    "data_status": "measured",
+    "data_completeness": "full_measured",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-106.2900, 31.7350],
+          [-106.2700, 31.7350],
+          [-106.2700, 31.7450],
+          [-106.2900, 31.7450],
+          [-106.2900, 31.7350]
+        ]
+      ]
+    },
+    "notes": "Chihuahuan Desert plateau (~3,800 ft elevation) with lowest wet-bulb (20.2°C), enabling >3.8°C evaporative economizer headroom and wide nighttime radiative purging (min 23.9°C)."
+  },
+  {
+    "site_id": "TX-LUB-01",
+    "display_name": "Lubbock High Plains Renewable Energy Park",
+    "city": "Lubbock",
+    "submarket": "Texas Panhandle / South Plains",
+    "market_cluster": "High Plains & Panhandle",
+    "archetype": "Semi-Arid High Plains Energy & Agriculture Fringe",
+    "latitude": 33.5800,
+    "longitude": -101.8200,
+    "area_acres": 110.0,
+    "target_capacity_mw": 140.0,
+    "data_status": "measured",
+    "data_completeness": "enriched",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-101.8300, 33.5750],
+          [-101.8100, 33.5750],
+          [-101.8100, 33.5850],
+          [-101.8300, 33.5850],
+          [-101.8300, 33.5750]
+        ]
+      ]
+    },
+    "notes": "High plains semi-arid plateau (3,200 ft elevation) with abundant wind energy interconnection, low humidity, and rapid nocturnal radiative cooling."
+  },
+  {
+    "site_id": "TX-WAC-01",
+    "display_name": "Central Texas I-35 Logistics Gateway",
+    "city": "Waco",
+    "submarket": "Central Texas / McLennan County",
+    "market_cluster": "Central Texas Technology Corridor",
+    "archetype": "Interstate Corridor Distribution Hub",
+    "latitude": 31.5400,
+    "longitude": -97.1100,
+    "area_acres": 60.0,
+    "target_capacity_mw": 65.0,
+    "data_status": "measured",
+    "data_completeness": "enriched",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-97.1200, 31.5350],
+          [-97.1000, 31.5350],
+          [-97.1000, 31.5450],
+          [-97.1200, 31.5450],
+          [-97.1200, 31.5350]
+        ]
+      ]
+    },
+    "notes": "Central logistics corridor midway between DFW and Austin with highway accessibility, moderate humidity, and transitional thermal exposure."
+  },
+  {
+    "site_id": "TX-CRP-01",
+    "display_name": "Corpus Christi Coastal Energy & Export Terminal",
+    "city": "Corpus Christi",
+    "submarket": "Gulf Coast / Nueces Bay",
+    "market_cluster": "Gulf Coast / Houston",
+    "archetype": "Maritime Coastal Industrial Terminal",
+    "latitude": 27.8100,
+    "longitude": -97.4300,
+    "area_acres": 75.0,
+    "target_capacity_mw": 80.0,
+    "data_status": "measured",
+    "data_completeness": "enriched",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-97.4400, 27.8050],
+          [-97.4200, 27.8050],
+          [-97.4200, 27.8150],
+          [-97.4400, 27.8150],
+          [-97.4400, 27.8050]
+        ]
+      ]
+    },
+    "notes": "South Texas Gulf Coast terminal with continuous sea breeze, high humidity floor, and moderate maritime diurnal swings."
+  }
+]

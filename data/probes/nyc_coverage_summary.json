@@ -1,0 +1,26 @@
+{
+  "city": "New York City",
+  "study_date": "2024-07-15",
+  "study_window": "Jul 15\u201321, 2024",
+  "timestamp": "2026-08-21T22:20:32.468575+00:00",
+  "total_tiles_required": 47,
+  "tiles_cached": 47,
+  "tiles_available": 47,
+  "tiles_failed": 0,
+  "coverage_percentage": 100.0,
+  "is_complete_citywide": true,
+  "layers_available": {
+    "tcm_peak": 75380,
+    "tcm_mean": 75380,
+    "exceedance": 75380,
+    "persistence": 75380,
+    "cooling_burden": 75380
+  },
+  "geographic_bounds": {
+    "min_longitude": -74.2556,
+    "min_latitude": 40.4961,
+    "max_longitude": -73.7,
+    "max_latitude": 40.9155
+  },
+  "data_provenance": "FortyGuard High-Resolution Microclimate API (100m Ambient Grid)"
+}

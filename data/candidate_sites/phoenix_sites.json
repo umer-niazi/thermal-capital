@@ -1,0 +1,252 @@
+[
+  {
+    "site_id": "PHX-DTC-01",
+    "display_name": "Phoenix Central Logistics & Power Corridor",
+    "submarket": "Central Phoenix Industrial",
+    "archetype": "Dense Urban Industrial & Logistics Corridor",
+    "latitude": 33.4460,
+    "longitude": -112.0745,
+    "area_acres": 35.0,
+    "target_capacity_mw": 50.0,
+    "data_status": "measured",
+    "data_completeness": "full_measured",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-112.0780, 33.4440],
+          [-112.0710, 33.4440],
+          [-112.0710, 33.4480],
+          [-112.0780, 33.4480],
+          [-112.0780, 33.4440]
+        ]
+      ]
+    },
+    "notes": "Representative screening site within Central Phoenix heavy industrial corridor. Measured under July 15-21, 2024 FortyGuard heatwave probe with full satellite and wet-bulb enrichment."
+  },
+  {
+    "site_id": "PHX-DTC-02",
+    "display_name": "Northwest Airport Industrial Technology Park",
+    "submarket": "Airport / Sky Harbor North",
+    "archetype": "Aviation & Logistics Hub",
+    "latitude": 33.4510,
+    "longitude": -112.0735,
+    "area_acres": 32.0,
+    "target_capacity_mw": 45.0,
+    "data_status": "measured",
+    "data_completeness": "enriched",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-112.0770, 33.4490],
+          [-112.0700, 33.4490],
+          [-112.0700, 33.4530],
+          [-112.0770, 33.4530],
+          [-112.0770, 33.4490]
+        ]
+      ]
+    },
+    "notes": "Representative screening site northwest of Sky Harbor. Measured under FortyGuard TCM, Exceedance, and Persistence multi-day heatwave layers."
+  },
+  {
+    "site_id": "PHX-DTC-03",
+    "display_name": "Sky Harbor South Air Cargo Logistics Park",
+    "submarket": "Airport / Sky Harbor South",
+    "archetype": "Air Cargo & Freight Logistics Corridor",
+    "latitude": 33.4240,
+    "longitude": -112.0150,
+    "area_acres": 48.0,
+    "target_capacity_mw": 60.0,
+    "data_status": "requires_analysis",
+    "data_completeness": "requires_analysis",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-112.0200, 33.4210],
+          [-112.0100, 33.4210],
+          [-112.0100, 33.4270],
+          [-112.0200, 33.4270],
+          [-112.0200, 33.4210]
+        ]
+      ]
+    },
+    "notes": "Representative screening site south of Sky Harbor airport runway along the freight rail corridor. High paved surface fraction."
+  },
+  {
+    "site_id": "PHX-DTC-04",
+    "display_name": "West Phoenix / Tolleson Logistics Gateway",
+    "submarket": "West Phoenix / Tolleson",
+    "archetype": "Heavy Logistics & Mega-Warehouse Hub",
+    "latitude": 33.4450,
+    "longitude": -112.2610,
+    "area_acres": 65.0,
+    "target_capacity_mw": 80.0,
+    "data_status": "requires_analysis",
+    "data_completeness": "requires_analysis",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-112.2680, 33.4410],
+          [-112.2540, 33.4410],
+          [-112.2540, 33.4490],
+          [-112.2680, 33.4490],
+          [-112.2680, 33.4410]
+        ]
+      ]
+    },
+    "notes": "Representative screening site in the Tolleson I-10 mega-distribution corridor with extensive concrete logistics aprons and roof area."
+  },
+  {
+    "site_id": "PHX-DTC-05",
+    "display_name": "Goodyear AirPark Infrastructure Campus",
+    "submarket": "Goodyear / Avondale",
+    "archetype": "Masterplanned Industrial & Data Center Park",
+    "latitude": 33.4150,
+    "longitude": -112.3850,
+    "area_acres": 75.0,
+    "target_capacity_mw": 100.0,
+    "data_status": "requires_analysis",
+    "data_completeness": "requires_analysis",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-112.3920, 33.4100],
+          [-112.3780, 33.4100],
+          [-112.3780, 33.4200],
+          [-112.3920, 33.4200],
+          [-112.3920, 33.4100]
+        ]
+      ]
+    },
+    "notes": "Representative screening site near Goodyear Airport. Mixed industrial zoning with surrounding undeveloped desert parcels."
+  },
+  {
+    "site_id": "PHX-DTC-06",
+    "display_name": "Buckeye Western Desert Technology Gateway",
+    "submarket": "Buckeye Desert Fringe",
+    "archetype": "Western Desert Submarket & High-Albedo Open Fringe",
+    "latitude": 33.4350,
+    "longitude": -112.5850,
+    "area_acres": 120.0,
+    "target_capacity_mw": 150.0,
+    "data_status": "requires_analysis",
+    "data_completeness": "requires_analysis",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-112.5950, 33.4280],
+          [-112.5750, 33.4280],
+          [-112.5750, 33.4420],
+          [-112.5950, 33.4420],
+          [-112.5950, 33.4280]
+        ]
+      ]
+    },
+    "notes": "Representative screening site in the western desert periphery of Buckeye along the SR-85 energy corridor. High natural bare ground fraction."
+  },
+  {
+    "site_id": "PHX-DTC-07",
+    "display_name": "Mesa Elliot Road Technology Corridor",
+    "submarket": "Mesa / Elliot Road",
+    "archetype": "Hyperscale Technology & Data Center Corridor",
+    "latitude": 33.3480,
+    "longitude": -111.6650,
+    "area_acres": 85.0,
+    "target_capacity_mw": 120.0,
+    "data_status": "requires_analysis",
+    "data_completeness": "requires_analysis",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-111.6740, 33.3420],
+          [-111.6560, 33.3420],
+          [-111.6560, 33.3540],
+          [-111.6740, 33.3540],
+          [-111.6740, 33.3420]
+        ]
+      ]
+    },
+    "notes": "Representative screening site in the premier Mesa Elliot Road hyperscale data center submarket adjacent to major transmission substations."
+  },
+  {
+    "site_id": "PHX-DTC-08",
+    "display_name": "Chandler Southeast Semiconductor Tech Park",
+    "submarket": "Chandler / Southeast Valley",
+    "archetype": "High-Tech Semiconductor Manufacturing & Advanced R&D",
+    "latitude": 33.2850,
+    "longitude": -111.8820,
+    "area_acres": 55.0,
+    "target_capacity_mw": 75.0,
+    "data_status": "requires_analysis",
+    "data_completeness": "requires_analysis",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-111.8900, 33.2800],
+          [-111.8740, 33.2800],
+          [-111.8740, 33.2900],
+          [-111.8900, 33.2900],
+          [-111.8900, 33.2800]
+        ]
+      ]
+    },
+    "notes": "Representative screening site in the Price Road tech corridor near semiconductor manufacturing campuses."
+  },
+  {
+    "site_id": "PHX-DTC-09",
+    "display_name": "Tempe Rio Salado Urban Innovation Zone",
+    "submarket": "Tempe / South Phoenix",
+    "archetype": "Mixed Urban Industrial & Grid Transition Corridor",
+    "latitude": 33.4150,
+    "longitude": -111.9650,
+    "area_acres": 28.0,
+    "target_capacity_mw": 40.0,
+    "data_status": "requires_analysis",
+    "data_completeness": "requires_analysis",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-111.9710, 33.4110],
+          [-111.9590, 33.4110],
+          [-111.9590, 33.4190],
+          [-111.9710, 33.4190],
+          [-111.9710, 33.4110]
+        ]
+      ]
+    },
+    "notes": "Representative screening site within the Tempe urban-industrial transition zone near Salt River corridor."
+  },
+  {
+    "site_id": "PHX-DTC-10",
+    "display_name": "Deer Valley / North Phoenix Advanced Manufacturing Hub",
+    "submarket": "North Phoenix / Deer Valley",
+    "archetype": "Advanced Manufacturing & TSMC Semiconductor Supplier Cluster",
+    "latitude": 33.6850,
+    "longitude": -112.1150,
+    "area_acres": 50.0,
+    "target_capacity_mw": 70.0,
+    "data_status": "requires_analysis",
+    "data_completeness": "requires_analysis",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-112.1220, 33.6800],
+          [-112.1080, 33.6800],
+          [-112.1080, 33.6900],
+          [-112.1220, 33.6900],
+          [-112.1220, 33.6800]
+        ]
+      ]
+    },
+    "notes": "Representative screening site in North Phoenix Deer Valley submarket, in proximity to TSMC Fab 21 supplier network."
+  }
+]
