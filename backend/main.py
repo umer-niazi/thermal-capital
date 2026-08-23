@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import pathlib
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -20,12 +21,28 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Enable CORS for local development (Vite dev server on port 5173 / 3000)
+# Configure CORS: support local dev + Vercel deployment domains + optional ALLOWED_ORIGINS env
+allowed_origins_env = os.environ.get("ALLOWED_ORIGINS")
+if allowed_origins_env:
+    allowed_origins = [orig.strip() for orig in allowed_origins_env.split(",") if orig.strip()]
+elif os.environ.get("VERCEL"):
+    allowed_origins = []
+else:
+    allowed_origins = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins if allowed_origins else [],
+    allow_origin_regex=r"^https://.*\.vercel\.app$" if (os.environ.get("VERCEL") or not allowed_origins) else None,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
     allow_headers=["*"],
 )
 

@@ -52,6 +52,8 @@ frontend/dist/
 dist/
 .vite/
 .eslintcache
+.vercel/
+.vercel
 
 # --- Secrets & Environment Variables ---
 .env

@@ -432,9 +432,12 @@ def _load_screening_data(region: str = "texas") -> SiteScreeningResult:
             scoring_config=get_texas_config(),
             region="texas",
         )
-        OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
-        with open(TEXAS_SCREENING_FILE, "w", encoding="utf-8") as f:
-            json.dump(result.model_dump(), f, indent=2)
+        try:
+            OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
+            with open(TEXAS_SCREENING_FILE, "w", encoding="utf-8") as f:
+                json.dump(result.model_dump(), f, indent=2)
+        except OSError:
+            pass
         return result
 
     # Phoenix Baseline screening
@@ -566,8 +569,12 @@ def _load_screening_data(region: str = "texas") -> SiteScreeningResult:
         enrichment_status={"measured_site_ids": list(measured_ids)},
         scoring_metadata={"scoring_profile": "phoenix_desert_extreme"},
     )
-    with open(PHOENIX_SCREENING_FILE, "w", encoding="utf-8") as f:
-        json.dump(result.model_dump(), f, indent=2)
+    try:
+        OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
+        with open(PHOENIX_SCREENING_FILE, "w", encoding="utf-8") as f:
+            json.dump(result.model_dump(), f, indent=2)
+    except OSError:
+        pass
     return result
 
 

@@ -140,12 +140,11 @@ export async function fetchAssets(city: string = "nyc", assetType?: string): Pro
     return memoryCache.get(cacheKey);
   }
 
-  const url = new URL(`${window.location.origin}${API_BASE}/assets`);
-  url.searchParams.set("city", city);
+  let url = `${API_BASE}/assets?city=${encodeURIComponent(city)}`;
   if (assetType) {
-    url.searchParams.set("asset_type", assetType);
+    url += `&asset_type=${encodeURIComponent(assetType)}`;
   }
-  const resp = await fetch(url.toString().replace(window.location.origin, ""));
+  const resp = await fetch(url);
   if (!resp.ok) {
     throw new Error(`Failed to fetch public assets for ${city}: ${resp.statusText}`);
   }

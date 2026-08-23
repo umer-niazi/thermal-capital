@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import datetime
 import json
+import os
 import pathlib
+import shutil
 import sqlite3
 from typing import Any
 
@@ -12,17 +14,38 @@ DEFAULT_CACHE_DIR = pathlib.Path(__file__).resolve().parent.parent.parent / "dat
 DEFAULT_DB_PATH = DEFAULT_CACHE_DIR / "api_cache.db"
 
 
+def get_default_db_path() -> pathlib.Path:
+    """Resolve database path, adapting to /tmp in read-only serverless environments."""
+    if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+        tmp_dir = pathlib.Path("/tmp/thermal_capital_cache")
+        tmp_dir.mkdir(parents=True, exist_ok=True)
+        tmp_db = tmp_dir / "api_cache.db"
+        if DEFAULT_DB_PATH.exists() and not tmp_db.exists():
+            try:
+                shutil.copy2(str(DEFAULT_DB_PATH), str(tmp_db))
+            except Exception:
+                pass
+        return tmp_db
+    return DEFAULT_DB_PATH
+
+
 class SQLiteCacheStore:
     """Persistent SQLite cache store ensuring zero redundant API calls and credit preservation."""
 
     def __init__(self, db_path: str | pathlib.Path | None = None) -> None:
-        self.db_path = pathlib.Path(db_path or DEFAULT_DB_PATH)
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.db_path = pathlib.Path(db_path or get_default_db_path())
+        try:
+            self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass
         self._init_db()
 
     def _get_connection(self) -> sqlite3.Connection:
         conn = sqlite3.connect(str(self.db_path), timeout=30.0)
-        conn.execute("PRAGMA journal_mode=WAL;")
+        try:
+            conn.execute("PRAGMA journal_mode=WAL;")
+        except sqlite3.OperationalError:
+            pass
         conn.execute("PRAGMA synchronous=NORMAL;")
         return conn
 
