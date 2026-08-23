@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SiteDetail } from "../components/SiteDetail";
 import { PublicAsset } from "../types";
+import { TemperatureProvider } from "../context/TemperatureContext";
 
 const mockAsset: PublicAsset = {
   asset_id: "PHX-TRN-01",
@@ -35,24 +36,45 @@ const mockAsset: PublicAsset = {
 };
 
 describe("SiteDetail Component", () => {
-  it("renders area heat exposure, peak temperature, and why this area matters", () => {
+  it("renders area heat exposure, peak temperature in °F by default with °C secondary, and why this area matters", () => {
     const onBack = vi.fn();
     const onPlan = vi.fn();
 
     render(
-      <SiteDetail
-        asset={mockAsset}
-        onBack={onBack}
-        onPlanIntervention={onPlan}
-      />
+      <TemperatureProvider initialUnit="F">
+        <SiteDetail
+          asset={mockAsset}
+          onBack={onBack}
+          onPlanIntervention={onPlan}
+        />
+      </TemperatureProvider>
     );
 
     expect(screen.getByText("Van Buren & Central Ave Regional Transit Center")).toBeInTheDocument();
     expect(screen.getByText("PHX-TRN-01")).toBeInTheDocument();
     expect(screen.getByText("EXTREME")).toBeInTheDocument();
+    expect(screen.getAllByText(/106.2°F/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/41.2°C/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/9.0 h/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Why is this area a priority?")).toBeInTheDocument();
+  });
+
+  it("renders primary °C when Celsius preference is active", () => {
+    const onBack = vi.fn();
+    const onPlan = vi.fn();
+
+    render(
+      <TemperatureProvider initialUnit="C">
+        <SiteDetail
+          asset={mockAsset}
+          onBack={onBack}
+          onPlanIntervention={onPlan}
+        />
+      </TemperatureProvider>
+    );
+
+    expect(screen.getAllByText(/41.2°C/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/106.2°F/).length).toBeGreaterThanOrEqual(1);
   });
 
   it("calls onPlanIntervention when test intervention button is clicked", () => {

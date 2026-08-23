@@ -11,10 +11,11 @@ import {
   getAssetTypeLabel,
   getRiskColor,
 } from "../utils/formatters";
+import { useTemperature } from "../context/TemperatureContext";
+import { ProgressStageCard } from "./ProgressStageCard";
 import {
   CheckCircle2,
   FileText,
-  Loader2,
   SlidersHorizontal,
   X,
 } from "lucide-react";
@@ -37,6 +38,7 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
   const [result, setResult] = useState<BudgetOptimizationResult | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { formatDelta } = useTemperature();
 
   // Close on Escape key
   useEffect(() => {
@@ -187,9 +189,17 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
 
           {/* Results Area */}
           {loading ? (
-            <div className="h-44 flex flex-col items-center justify-center text-slate-500 space-y-2">
-              <Loader2 className="w-6 h-6 animate-spin text-slate-600" />
-              <p className="text-xs">Calculating optimal intervention allocations...</p>
+            <div className="py-6">
+              <ProgressStageCard
+                title="Calculating Optimal Capital Allocation"
+                subtitle={`Simulating ${cityConfig.name} microclimate portfolio`}
+                stages={[
+                  { id: "assets", label: "Loading priority public asset inventory", status: "completed" },
+                  { id: "exposure", label: "Evaluating FortyGuard microclimate exposure & vulnerability", status: "completed" },
+                  { id: "knapsack", label: "Solving multi-variable capital allocation model", status: "active" },
+                  { id: "portfolio", label: "Finalizing optimal municipal intervention portfolio", status: "pending" },
+                ]}
+              />
             </div>
           ) : error || !result ? (
             <div className="p-3 rounded bg-red-50 border border-red-200 text-red-700 text-xs">
@@ -222,7 +232,7 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
                 <div className="bg-white border border-slate-200 p-2.5 rounded">
                   <span className="text-[11px] text-slate-500 block">Modeled Average Relief</span>
                   <div className="text-sm font-bold text-brand-700 font-mono">
-                    -{result.portfolio_avg_peak_reduction_c.toFixed(1)}°C
+                    {formatDelta(result.portfolio_avg_peak_reduction_c)}
                   </div>
                   <div className="text-[10px] text-slate-500">
                     -{result.portfolio_avg_hours_reduction_pct.toFixed(0)}% &gt;35°C hours (modeled)
@@ -286,7 +296,7 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
                               {formatCurrency(alloc.allocated_cost)}
                             </td>
                             <td className="p-2.5 text-right font-mono font-bold text-brand-700">
-                              -{alloc.modeled_peak_reduction_c.toFixed(1)}°C
+                              {formatDelta(alloc.modeled_peak_reduction_c)}
                             </td>
                             <td className="p-2.5 text-right font-mono text-slate-600">
                               {formatNumber(alloc.benefited_daily_population)}

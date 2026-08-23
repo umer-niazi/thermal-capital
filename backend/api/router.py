@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import functools
 import json
 import pathlib
 from typing import Any
@@ -130,11 +131,16 @@ def get_coverage_summary() -> dict[str, Any]:
     }
 
 
+@functools.lru_cache(maxsize=4)
+def _load_cached_boroughs() -> dict[str, Any]:
+    from backend.services.nyc_tiling import load_nyc_boroughs
+    return load_nyc_boroughs()
+
+
 @router.get("/boroughs")
 def get_nyc_boroughs_geojson() -> dict[str, Any]:
     """Retrieve official NYC 5-borough boundaries GeoJSON for MapLibre overlay."""
-    from backend.services.nyc_tiling import load_nyc_boroughs
-    return load_nyc_boroughs()
+    return _load_cached_boroughs()
 
 
 @router.get("/cities", response_model=list[CityConfig])
@@ -259,17 +265,10 @@ def generate_report(req: BudgetOptimizationRequest) -> PlanningReport:
 # 4. FortyGuard GeoJSON Heatmap Layers (MapLibre Rendering)
 # ---------------------------------------------------------------------------
 
-@router.get("/heatmap")
-def get_heatmap_layer(
-    layer: str = Query("tcm_peak", description="Layer type: 'tcm_peak', 'tcm_mean', 'exceedance', 'persistence', or 'cooling'"),
-    region: str = Query("nyc", description="City: 'nyc' (default)"),
-    borough: str | None = Query(None, description="Optional borough filter (e.g. 'Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island')"),
-) -> dict[str, Any]:
-    """Retrieve GeoJSON heatmap tiles styled and annotated for MapLibre rendering."""
+@functools.lru_cache(maxsize=64)
+def _build_heatmap_layer(layer_norm: str, reg_norm: str, borough_norm: str | None) -> dict[str, Any]:
+    """Internal memoized GeoJSON heatmap layer generator."""
     annotated_features = []
-    layer_norm = layer.lower().strip()
-    reg_norm = region.lower().strip()
-    borough_norm = borough.lower().strip() if borough and borough.lower() != "all" else None
 
     # Resolve target citywide or fallback probe file
     if layer_norm in ("tcm_peak", "tcm_mean", "tcm", "cooling"):
@@ -286,73 +285,89 @@ def get_heatmap_layer(
         f_path = citywide_p if citywide_p.exists() else (PROBES_DIR / "nyc_tcm_2024-07-15.json")
 
     if f_path.exists():
-        with open(f_path, "r", encoding="utf-8") as f:
-            raw_data = json.load(f)
-        features = (raw_data.get("result") or raw_data).get("map_data", {}).get("features", [])
-        
-        for idx, feat in enumerate(features):
-            props = dict(feat.get("properties", {}))
-            geom = feat.get("geometry")
+        try:
+            with open(f_path, "r", encoding="utf-8") as f:
+                raw_data = json.load(f)
+            features = (raw_data.get("result") or raw_data).get("map_data", {}).get("features", [])
+            
+            for idx, feat in enumerate(features):
+                props = dict(feat.get("properties", {}))
+                geom = feat.get("geometry")
 
-            # Borough filter if specified
-            cell_borough = props.get("borough", "New York City")
-            if borough_norm and borough_norm not in cell_borough.lower():
-                continue
+                # Borough filter if specified
+                cell_borough = props.get("borough", "New York City")
+                if borough_norm and borough_norm not in cell_borough.lower():
+                    continue
 
-            if layer_norm in ("tcm_peak", "tcm"):
-                peak_c = float(props.get("max_temperature", props.get("temperature", 34.0)))
-                mean_c = float(props.get("average_temperature", props.get("temperature", 29.5)))
-                min_c = float(props.get("min_temperature", 24.5))
-                props["display_value"] = f"{peak_c:.1f}°C ({round(peak_c * 9 / 5 + 32, 1):.1f}°F)"
-                props["display_label"] = "Peak Ambient Temperature"
-                props["color_metric"] = peak_c
-                props["peak_c"] = peak_c
-                props["peak_f"] = round(peak_c * 9 / 5 + 32, 1)
-                props["mean_c"] = mean_c
-                props["mean_f"] = round(mean_c * 9 / 5 + 32, 1)
-                props["min_c"] = min_c
-            elif layer_norm == "tcm_mean":
-                peak_c = float(props.get("max_temperature", props.get("temperature", 34.0)))
-                mean_c = float(props.get("average_temperature", props.get("temperature", 29.5)))
-                min_c = float(props.get("min_temperature", 24.5))
-                props["display_value"] = f"{mean_c:.1f}°C ({round(mean_c * 9 / 5 + 32, 1):.1f}°F)"
-                props["display_label"] = "Daily Mean Temperature"
-                props["color_metric"] = mean_c
-                props["peak_c"] = peak_c
-                props["peak_f"] = round(peak_c * 9 / 5 + 32, 1)
-                props["mean_c"] = mean_c
-                props["mean_f"] = round(mean_c * 9 / 5 + 32, 1)
-                props["min_c"] = min_c
-            elif layer_norm == "exceedance":
-                val = float(props.get("value", 0.0))
-                props["display_value"] = f"{val:.1f} hrs >35°C"
-                props["display_label"] = "Heat Exceedance Duration (>35°C)"
-                props["color_metric"] = max(0.0, val)
-                props["exceedance_hours"] = val
-            elif layer_norm == "persistence":
-                val = float(props.get("value", 0.0))
-                props["display_value"] = f"{val:.1f} hrs unbroken"
-                props["display_label"] = "Heat Persistence (>35°C)"
-                props["color_metric"] = max(0.0, val)
-                props["persistence_hours"] = val
-            elif layer_norm == "cooling":
-                mean_c = float(props.get("average_temperature", props.get("temperature", 29.5)))
-                cdh = round(max(0.0, mean_c - 20.0) * 24.0 * 7.0, 1)
-                props["display_value"] = f"{cdh:.0f} CDH"
-                props["display_label"] = "Cooling Degree Hours (>20°C base)"
-                props["color_metric"] = cdh
+                if layer_norm in ("tcm_peak", "tcm"):
+                    peak_c = float(props.get("max_temperature", props.get("temperature", 34.0)))
+                    mean_c = float(props.get("average_temperature", props.get("temperature", 29.5)))
+                    min_c = float(props.get("min_temperature", 24.5))
+                    props["display_value"] = f"{peak_c:.1f}°C ({round(peak_c * 9 / 5 + 32, 1):.1f}°F)"
+                    props["display_label"] = "Peak Ambient Temperature"
+                    props["color_metric"] = peak_c
+                    props["peak_c"] = peak_c
+                    props["peak_f"] = round(peak_c * 9 / 5 + 32, 1)
+                    props["mean_c"] = mean_c
+                    props["mean_f"] = round(mean_c * 9 / 5 + 32, 1)
+                    props["min_c"] = min_c
+                elif layer_norm == "tcm_mean":
+                    peak_c = float(props.get("max_temperature", props.get("temperature", 34.0)))
+                    mean_c = float(props.get("average_temperature", props.get("temperature", 29.5)))
+                    min_c = float(props.get("min_temperature", 24.5))
+                    props["display_value"] = f"{mean_c:.1f}°C ({round(mean_c * 9 / 5 + 32, 1):.1f}°F)"
+                    props["display_label"] = "Daily Mean Temperature"
+                    props["color_metric"] = mean_c
+                    props["peak_c"] = peak_c
+                    props["peak_f"] = round(peak_c * 9 / 5 + 32, 1)
+                    props["mean_c"] = mean_c
+                    props["mean_f"] = round(mean_c * 9 / 5 + 32, 1)
+                    props["min_c"] = min_c
+                elif layer_norm == "exceedance":
+                    val = float(props.get("value", 0.0))
+                    props["display_value"] = f"{val:.1f} hrs >35°C"
+                    props["display_label"] = "Heat Exceedance Duration (>35°C)"
+                    props["color_metric"] = max(0.0, val)
+                    props["exceedance_hours"] = val
+                elif layer_norm == "persistence":
+                    val = float(props.get("value", 0.0))
+                    props["display_value"] = f"{val:.1f} hrs unbroken"
+                    props["display_label"] = "Heat Persistence (>35°C)"
+                    props["color_metric"] = max(0.0, val)
+                    props["persistence_hours"] = val
+                elif layer_norm == "cooling":
+                    mean_c = float(props.get("average_temperature", props.get("temperature", 29.5)))
+                    cdh = round(max(0.0, mean_c - 20.0) * 24.0 * 7.0, 1)
+                    props["display_value"] = f"{cdh:.0f} CDH"
+                    props["display_label"] = "Cooling Degree Hours (>20°C base)"
+                    props["color_metric"] = cdh
 
-            props["tile_id"] = idx
-            props["region_name"] = "New York City"
-            annotated_features.append({"type": "Feature", "properties": props, "geometry": geom})
+                props["tile_id"] = idx
+                props["region_name"] = "New York City"
+                annotated_features.append({"type": "Feature", "properties": props, "geometry": geom})
+        except Exception:
+            pass
 
     return {
         "type": "FeatureCollection",
         "region": "nyc",
-        "borough": borough or "all",
+        "borough": borough_norm or "all",
         "layer_type": layer_norm,
         "features": annotated_features,
     }
+
+
+@router.get("/heatmap")
+def get_heatmap_layer(
+    layer: str = Query("tcm_peak", description="Layer type: 'tcm_peak', 'tcm_mean', 'exceedance', 'persistence', or 'cooling'"),
+    region: str = Query("nyc", description="City: 'nyc' (default)"),
+    borough: str | None = Query(None, description="Optional borough filter (e.g. 'Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island')"),
+) -> dict[str, Any]:
+    """Retrieve GeoJSON heatmap tiles styled and annotated for MapLibre rendering."""
+    layer_norm = layer.lower().strip()
+    reg_norm = region.lower().strip()
+    borough_norm = borough.lower().strip() if (isinstance(borough, str) and borough and borough.lower() != "all") else None
+    return _build_heatmap_layer(layer_norm, reg_norm, borough_norm)
 
 
 # ---------------------------------------------------------------------------

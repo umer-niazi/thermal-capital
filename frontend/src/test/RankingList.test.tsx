@@ -116,4 +116,21 @@ describe("RankingList Component", () => {
     fireEvent.click(testButtons[0]);
     expect(onPlan).toHaveBeenCalledWith("PHX-TRN-01");
   });
+
+  it("formats peak temperature in °F by default", () => {
+    const onSelect = vi.fn();
+    const onPlan = vi.fn();
+
+    render(
+      <RankingList
+        assets={mockAssets}
+        cityConfig={mockCity}
+        onSelectAsset={onSelect}
+        onPlanAsset={onPlan}
+      />
+    );
+
+    expect(screen.getByText(/106.2°F peak/)).toBeInTheDocument();
+    expect(screen.getByText(/104.9°F peak/)).toBeInTheDocument();
+  });
 });

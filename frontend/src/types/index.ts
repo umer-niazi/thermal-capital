@@ -23,6 +23,8 @@ export type OptimizationStrategy =
 
 export type AppMode = "explore" | "plan";
 
+export type TemperatureUnit = "F" | "C";
+
 export type PlacedInterventionType = "tree" | "shade" | "reflective";
 
 export interface PlacedIntervention {
@@ -470,5 +472,4 @@ export interface ComparisonResponse {
 }
 
 export type HeatmapLayerType = "tcm_peak" | "tcm_mean" | "exceedance" | "persistence" | "cooling";
-export type TemperatureUnit = "C" | "F";
 export type RegionType = "nyc" | "phoenix" | "san_jose" | "texas" | "austin" | "houston" | "dfw" | "el_paso";

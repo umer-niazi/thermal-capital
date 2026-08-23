@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  celsiusDeltaToFahrenheit,
+  celsiusToFahrenheit,
+  fahrenheitToCelsius,
   formatCurrency,
   formatDeltaC,
   formatHours,
@@ -8,12 +11,49 @@ import {
   formatTemp,
   formatTempC,
   formatTempF,
+  formatTemperature,
+  formatTemperatureDelta,
+  formatTemperatureRange,
+  formatTemperatureValue,
   getAssetTypeLabel,
   getRiskColor,
   getScoreProgressColor,
 } from "../utils/formatters";
 
 describe("Formatting Utilities", () => {
+  it("converts absolute temperatures accurately between Celsius and Fahrenheit", () => {
+    expect(celsiusToFahrenheit(0)).toBe(32);
+    expect(celsiusToFahrenheit(40)).toBe(104);
+    expect(celsiusToFahrenheit(41.2)).toBeCloseTo(106.16, 2);
+    expect(fahrenheitToCelsius(32)).toBe(0);
+    expect(fahrenheitToCelsius(104)).toBe(40);
+  });
+
+  it("converts temperature differences (deltas) accurately without absolute 32 offset", () => {
+    // 2.2°C difference = 3.96°F difference
+    expect(celsiusDeltaToFahrenheit(2.2)).toBeCloseTo(3.96, 2);
+    expect(celsiusDeltaToFahrenheit(1.0)).toBe(1.8);
+    expect(formatTemperatureDelta(2.2, "F", 1)).toBe("-4.0°F");
+    expect(formatTemperatureDelta(2.2, "C", 1)).toBe("-2.2°C");
+    expect(formatTemperatureDelta(null, "F")).toBe("—");
+  });
+
+  it("formats temperature values and ranges according to unit preference", () => {
+    // Fahrenheit default
+    expect(formatTemperature(41.2, "F")).toBe("106.2°F");
+    expect(formatTemperatureValue(41.2, "F")).toBe("106.2");
+    expect(formatTemperatureRange(33.0, 41.0, "F")).toBe("91.4–105.8°F");
+
+    // Celsius option
+    expect(formatTemperature(41.2, "C")).toBe("41.2°C");
+    expect(formatTemperatureValue(41.2, "C")).toBe("41.2");
+    expect(formatTemperatureRange(33.0, 41.0, "C")).toBe("33.0–41.0°C");
+
+    // Null safety
+    expect(formatTemperature(null, "F")).toBe("—");
+    expect(formatTemperatureRange(null, 41.0, "F")).toBe("—");
+  });
+
   it("formats temperature in dual Celsius and Fahrenheit", () => {
     expect(formatTemp(40.5, 104.9)).toBe("40.5°C / 104.9°F");
     expect(formatTempC(40.5)).toBe("40.5°C");

@@ -1,7 +1,7 @@
 import React from "react";
 import { CityConfig, PublicAsset } from "../types";
+import { useTemperature } from "../context/TemperatureContext";
 import {
-  formatTempC,
   getRiskColor,
 } from "../utils/formatters";
 import {
@@ -22,6 +22,7 @@ export const RankingList: React.FC<RankingListProps> = ({
   onSelectAsset,
   onPlanAsset,
 }) => {
+  const { formatTemp } = useTemperature();
   return (
     <div className="p-4 space-y-4 text-slate-900">
       {/* City Summary Header */}
@@ -75,7 +76,7 @@ export const RankingList: React.FC<RankingListProps> = ({
                     <span>•</span>
                     <span>{obs.hours_above_35c.toFixed(1)} hrs &gt; 35°C</span>
                     <span>•</span>
-                    <span className="font-mono">{formatTempC(obs.peak_temperature_c)} peak</span>
+                    <span className="font-mono">{formatTemp(obs.peak_temperature_c)} peak</span>
                   </div>
                 </div>
               </div>

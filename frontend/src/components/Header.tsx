@@ -1,5 +1,6 @@
 import React from "react";
 import { AppMode, CityConfig, CoverageSummary } from "../types";
+import { useTemperature } from "../context/TemperatureContext";
 import {
   ChevronRight,
   Compass,
@@ -29,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenReport,
   coverageSummary,
 }) => {
+  const { unit, setUnit } = useTemperature();
   return (
     <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-2 sm:px-4 lg:px-6 z-20 flex-shrink-0 gap-1.5 sm:gap-2">
       {/* Left: Brand Title, NYC Focus Selector & Coverage Badge */}
@@ -73,15 +75,18 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Center: Connected 2-Step Workflow Stepper */}
-      <nav className="flex items-center bg-slate-100/90 p-0.5 rounded-md border border-slate-200 flex-shrink-0" aria-label="Planning workflow steps">
+      <nav
+        className="flex items-center bg-slate-100/90 p-0.5 rounded-md border border-slate-200 flex-shrink-0"
+        aria-label="Planning workflow steps"
+      >
         {/* Step 1: Identify Risk */}
         <button
           onClick={() => onSwitchMode("explore")}
           aria-label="1. Identify Risk"
           aria-current={appMode === "explore" ? "step" : undefined}
-          className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1 text-xs rounded transition-all font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[32px] sm:min-h-[30px] ${
+          className={`w-[98px] sm:w-[142px] h-[32px] sm:h-[30px] flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 text-xs rounded transition-colors font-semibold focus:outline-none focus:ring-2 focus:ring-slate-400 flex-shrink-0 ${
             appMode === "explore"
-              ? "bg-slate-900 text-white shadow-xs font-semibold"
+              ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
           }`}
         >
@@ -98,9 +103,9 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={() => onSwitchMode("plan")}
           aria-label="2. Intervene & Compare"
           aria-current={appMode === "plan" ? "step" : undefined}
-          className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1 text-xs rounded transition-all font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[32px] sm:min-h-[30px] ${
+          className={`w-[106px] sm:w-[174px] h-[32px] sm:h-[30px] flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 text-xs rounded transition-colors font-semibold focus:outline-none focus:ring-2 focus:ring-slate-400 flex-shrink-0 ${
             appMode === "plan"
-              ? "bg-slate-900 text-white shadow-xs font-semibold"
+              ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
           }`}
         >
@@ -110,8 +115,44 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
       </nav>
 
-      {/* Right: Secondary Tools & Actions */}
+      {/* Right: Secondary Tools & Temperature Unit Preference */}
       <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+        {/* Temperature Unit Segmented Toggle */}
+        <div
+          className="flex items-center bg-slate-100 p-0.5 rounded border border-slate-300 flex-shrink-0"
+          role="group"
+          aria-label="Temperature unit preference"
+        >
+          <button
+            type="button"
+            onClick={() => setUnit("F")}
+            aria-pressed={unit === "F"}
+            aria-label="Display temperature in Fahrenheit"
+            title="Display in Fahrenheit (°F)"
+            className={`w-7 sm:w-8 h-[26px] flex items-center justify-center text-xs font-semibold rounded border transition-colors focus:outline-none focus:ring-1 focus:ring-slate-400 flex-shrink-0 ${
+              unit === "F"
+                ? "bg-white text-slate-900 shadow-xs border-slate-200/80"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            °F
+          </button>
+          <button
+            type="button"
+            onClick={() => setUnit("C")}
+            aria-pressed={unit === "C"}
+            aria-label="Display temperature in Celsius"
+            title="Display in Celsius (°C)"
+            className={`w-7 sm:w-8 h-[26px] flex items-center justify-center text-xs font-semibold rounded border transition-colors focus:outline-none focus:ring-1 focus:ring-slate-400 flex-shrink-0 ${
+              unit === "C"
+                ? "bg-white text-slate-900 shadow-xs border-slate-200/80"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            °C
+          </button>
+        </div>
+
         <button
           onClick={onOpenOptimizer}
           aria-label="Open budget optimizer"

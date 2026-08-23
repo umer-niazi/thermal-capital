@@ -11,10 +11,10 @@ import { DEFAULT_INTERVENTION_COSTS, simulateInterventions } from "../services/a
 import {
   formatCurrency,
   formatNumber,
-  formatTempC,
   getAssetTypeLabel,
   getRiskColor,
 } from "../utils/formatters";
+import { useTemperature } from "../context/TemperatureContext";
 import { generateOffsetCoordinate } from "../utils/geoUtils";
 import {
   ArrowLeft,
@@ -46,6 +46,7 @@ interface PlanningWorkspaceProps {
   onSwitchMode: (mode: AppMode) => void;
   placedInterventions: PlacedIntervention[];
   onAddIntervention: (item: Omit<PlacedIntervention, "id" | "created_at">) => void;
+  onBatchAddInterventions?: (items: Array<Omit<PlacedIntervention, "id" | "created_at">>) => void;
   onRemoveIntervention: (id: string) => void;
   onClearAssetInterventions: (assetId?: string) => void;
   activePlacementTool: PlacedInterventionType | null;
@@ -63,6 +64,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
   onSwitchMode,
   placedInterventions,
   onAddIntervention,
+  onBatchAddInterventions,
   onRemoveIntervention,
   onClearAssetInterventions,
   activePlacementTool,
@@ -73,6 +75,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
   const [showAssumptions, setShowAssumptions] = useState<boolean>(false);
   const [showBaselineRationale, setShowBaselineRationale] = useState<boolean>(false);
   const [showMethodologyModal, setShowMethodologyModal] = useState<boolean>(false);
+  const { formatTemp, formatDelta } = useTemperature();
 
   const treeCost = DEFAULT_INTERVENTION_COSTS.tree_canopy.planning_unit_cost;
   const shadeCost = DEFAULT_INTERVENTION_COSTS.shade_structure.planning_unit_cost;
@@ -102,11 +105,12 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
     if (existingForAsset.length === 0) {
       const center: [number, number] = [asset.longitude, asset.latitude];
       const initialTrees = asset.asset_type === "playground" ? 6 : 4;
+      const starterItems: Array<Omit<PlacedIntervention, "id" | "created_at">> = [];
 
       // Add starter trees around asset
       for (let idx = 0; idx < initialTrees; idx++) {
         const [lng, lat] = generateOffsetCoordinate(center, idx, initialTrees, 25);
-        onAddIntervention({
+        starterItems.push({
           type: "tree",
           latitude: lat,
           longitude: lng,
@@ -117,7 +121,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
 
       // Add starter shade structure
       const [shadeLng, shadeLat] = generateOffsetCoordinate(center, 1, 4, 15);
-      onAddIntervention({
+      starterItems.push({
         type: "shade",
         latitude: shadeLat,
         longitude: shadeLng,
@@ -127,7 +131,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
 
       // Add starter cool pavement
       const [paveLng, paveLat] = generateOffsetCoordinate(center, 3, 4, 20);
-      onAddIntervention({
+      starterItems.push({
         type: "reflective",
         latitude: paveLat,
         longitude: paveLng,
@@ -135,40 +139,48 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
         area_m2: Math.min(300, Math.round(asset.footprint_m2 * 0.25)),
         label: "Reflective Surface #1",
       });
+
+      if (onBatchAddInterventions) {
+        onBatchAddInterventions(starterItems);
+      } else {
+        starterItems.forEach((item) => onAddIntervention(item));
+      }
     }
   }, [asset?.asset_id]);
 
-  // Run simulation whenever quantities or asset change
+  // Run simulation whenever quantities or asset change (debounced 50ms to prevent slider thrashing)
   useEffect(() => {
     if (!asset) return;
 
     let isMounted = true;
-
-    simulateInterventions({
-      asset_id: asset.asset_id,
-      city: cityConfig.city_key,
-      footprint_m2: asset.footprint_m2,
-      baseline_observed: asset.observed_heat,
-      trees_count: treesCount,
-      shade_structures_count: shadeCount,
-      cool_pavement_m2: coolPaveM2,
-      cool_roof_m2: 0,
-      daily_visitors: asset.daily_visitors,
-    })
-      .then((res) => {
-        if (isMounted) {
-          setSimulation(res);
-          if (onPlanUpdated) {
-            onPlanUpdated(res);
-          }
-        }
+    const timerId = setTimeout(() => {
+      simulateInterventions({
+        asset_id: asset.asset_id,
+        city: cityConfig.city_key,
+        footprint_m2: asset.footprint_m2,
+        baseline_observed: asset.observed_heat,
+        trees_count: treesCount,
+        shade_structures_count: shadeCount,
+        cool_pavement_m2: coolPaveM2,
+        cool_roof_m2: 0,
+        daily_visitors: asset.daily_visitors,
       })
-      .catch((err) => {
-        console.error("Simulation failed:", err);
-      });
+        .then((res) => {
+          if (isMounted) {
+            setSimulation(res);
+            if (onPlanUpdated) {
+              onPlanUpdated(res);
+            }
+          }
+        })
+        .catch((err) => {
+          console.error("Simulation failed:", err);
+        });
+    }, 50);
 
     return () => {
       isMounted = false;
+      clearTimeout(timerId);
     };
   }, [asset?.asset_id, treesCount, shadeCount, coolPaveM2, cityConfig.city_key]);
 
@@ -635,7 +647,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
                 </span>
               </div>
               <div className="font-mono text-sm font-bold text-slate-900">
-                {formatTempC(imp.peak_temp_before_c)}
+                {formatTemp(imp.peak_temp_before_c)}
               </div>
               <div className="text-xs text-slate-600">
                 Exposure: <strong className={riskCurrent.text}>{asset.heat_risk_level}</strong>
@@ -657,11 +669,11 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
               </div>
               <div className="flex items-baseline justify-between gap-1">
                 <div className="font-mono text-sm font-bold text-brand-900">
-                  {formatTempC(imp.peak_temp_after_c)}
+                  {formatTemp(imp.peak_temp_after_c)}
                 </div>
                 {imp.peak_reduction_c > 0 && (
                   <span className="text-xs font-bold text-brand-800 bg-brand-100 px-1.5 py-0.2 rounded border border-brand-200">
-                    ↓ {imp.peak_reduction_c.toFixed(1)}°C
+                    ↓ {formatDelta(imp.peak_reduction_c, 1, "")}
                   </span>
                 )}
               </div>
@@ -772,7 +784,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
                     asset.priority_reasons.map((r, i) => <li key={i}>{r}</li>)
                   ) : (
                     <>
-                      <li>High afternoon peak thermal exposure ({obs.peak_temperature_c.toFixed(1)}°C baseline)</li>
+                      <li>High afternoon peak thermal exposure ({formatTemp(obs.peak_temperature_c)} baseline)</li>
                       <li>Elevated heat persistence ({obs.hours_above_35c.toFixed(1)}h exceeding 35°C)</li>
                       <li>High transit/public usage (~{formatNumber(asset.daily_visitors)} citizens/day)</li>
                     </>

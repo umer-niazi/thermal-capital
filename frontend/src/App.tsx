@@ -23,6 +23,7 @@ import { PlanningBriefModal } from "./components/PlanningBriefModal";
 import { generateOffsetCoordinate } from "./utils/geoUtils";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { CoverageSummary } from "./types";
+import { TemperatureProvider } from "./context/TemperatureContext";
 
 const FALLBACK_CITIES: CityConfig[] = [
   {
@@ -125,7 +126,7 @@ const FALLBACK_CITIES: CityConfig[] = [
   },
 ];
 
-export const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [cities, setCities] = useState<CityConfig[]>(FALLBACK_CITIES);
   const [selectedCityKey, setSelectedCityKey] = useState<string>("nyc");
   const [coverageSummary, setCoverageSummary] = useState<CoverageSummary | null>(null);
@@ -155,43 +156,35 @@ export const App: React.FC = () => {
   // 1. Initial Load: Cities & Coverage
   useEffect(() => {
     let isMounted = true;
-    fetchCities()
-      .then((data) => {
-        if (isMounted && data.length > 0) {
-          setCities(data);
+    Promise.all([fetchCities(), fetchCoverageSummary()])
+      .then(([citiesData, covData]) => {
+        if (!isMounted) return;
+        if (citiesData && citiesData.length > 0) {
+          setCities(citiesData);
+        }
+        if (covData) {
+          setCoverageSummary(covData);
         }
       })
       .catch((err) => {
-        console.warn("Could not fetch /api/cities, using fallback:", err);
+        console.warn("Initial metadata fetch error:", err);
       });
-
-    fetchCoverageSummary()
-      .then((cov) => {
-        if (isMounted && cov) {
-          setCoverageSummary(cov);
-        }
-      })
-      .catch(() => {});
 
     return () => {
       isMounted = false;
     };
   }, []);
 
-  // 2. Load Assets and Heatmap when city changes
+  // 2. Load Assets when city changes
   useEffect(() => {
     let isMounted = true;
     setLoadingCityData(true);
     setError(null);
 
-    Promise.all([
-      fetchAssets(selectedCityKey),
-      fetchHeatmapLayer(activeLayer, selectedCityKey),
-    ])
-      .then(([assetsRes, heatmapRes]) => {
+    fetchAssets(selectedCityKey)
+      .then((assetsRes) => {
         if (!isMounted) return;
         setAssets(assetsRes);
-        setHeatmapGeoJSON(heatmapRes);
         if (assetsRes.length > 0) {
           setSelectedAssetId(assetsRes[0].asset_id);
         } else {
@@ -202,7 +195,7 @@ export const App: React.FC = () => {
       })
       .catch((err) => {
         if (!isMounted) return;
-        console.error("Failed to load city data:", err);
+        console.error("Failed to load city assets:", err);
         setError(err.message || "Failed to load heat data");
         setLoadingInitial(false);
         setLoadingCityData(false);
@@ -213,7 +206,7 @@ export const App: React.FC = () => {
     };
   }, [selectedCityKey]);
 
-  // 3. Fetch Heatmap Layer when activeLayer changes
+  // 3. Fetch Heatmap Layer when activeLayer or selectedCityKey changes
   useEffect(() => {
     let isMounted = true;
     fetchHeatmapLayer(activeLayer, selectedCityKey)
@@ -250,6 +243,16 @@ export const App: React.FC = () => {
       created_at: Date.now(),
     };
     setPlacedInterventions((prev) => [...prev, newIntervention]);
+  };
+
+  const handleBatchAddInterventions = (items: Array<Omit<PlacedIntervention, "id" | "created_at">>) => {
+    const timestamp = Date.now();
+    const newItems: PlacedIntervention[] = items.map((item, idx) => ({
+      ...item,
+      id: `int-${timestamp}-${idx}-${Math.random().toString(36).substring(2, 7)}`,
+      created_at: timestamp + idx,
+    }));
+    setPlacedInterventions((prev) => [...prev, ...newItems]);
   };
 
   const handleRemoveIntervention = (id: string) => {
@@ -411,6 +414,7 @@ export const App: React.FC = () => {
             onPlanUpdated={setActiveSimulation}
             placedInterventions={placedInterventions}
             onAddIntervention={handleAddIntervention}
+            onBatchAddInterventions={handleBatchAddInterventions}
             onRemoveIntervention={handleRemoveIntervention}
             onClearAssetInterventions={handleClearAssetInterventions}
             activePlacementTool={activePlacementTool}
@@ -441,5 +445,13 @@ export const App: React.FC = () => {
         />
       )}
     </div>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <TemperatureProvider>
+      <AppContent />
+    </TemperatureProvider>
   );
 };

@@ -140,8 +140,43 @@ describe("PlanningWorkspace Component", () => {
     expect(screen.getByText("Engineered Shade Structure")).toBeInTheDocument();
     expect(screen.getByText("Reflective Cool Pavement")).toBeInTheDocument();
     expect(await screen.findByText("Estimated Site Coverage:")).toBeInTheDocument();
-    expect(await screen.findByText("Estimated Benefited Area:")).toBeInTheDocument();
     expect(screen.getByText("Optimize Budget")).toBeInTheDocument();
     expect(screen.getByText("Generate Brief")).toBeInTheDocument();
+  });
+
+  it("displays baseline, modeled peak, and modeled reduction in °F by default", async () => {
+    const onSelect = vi.fn();
+    const onOpenOpt = vi.fn();
+    const onOpenRep = vi.fn();
+    const onSwitch = vi.fn();
+    const onAdd = vi.fn();
+    const onRemove = vi.fn();
+    const onClear = vi.fn();
+    const onSelectTool = vi.fn();
+
+    render(
+      <PlanningWorkspace
+        asset={mockAsset}
+        allAssets={[mockAsset]}
+        cityConfig={mockCity}
+        onSelectAsset={onSelect}
+        onOpenOptimizer={onOpenOpt}
+        onOpenReport={onOpenRep}
+        onSwitchMode={onSwitch}
+        placedInterventions={mockInterventions}
+        onAddIntervention={onAdd}
+        onRemoveIntervention={onRemove}
+        onClearAssetInterventions={onClear}
+        activePlacementTool={null}
+        onSelectPlacementTool={onSelectTool}
+      />
+    );
+
+    // Baseline: 41.2°C -> 106.2°F
+    expect(await screen.findByText("106.2°F")).toBeInTheDocument();
+    // After: 39.0°C -> 102.2°F
+    expect(await screen.findByText("102.2°F")).toBeInTheDocument();
+    // Delta: 2.2°C -> 4.0°F
+    expect(await screen.findByText("↓ 4.0°F")).toBeInTheDocument();
   });
 });

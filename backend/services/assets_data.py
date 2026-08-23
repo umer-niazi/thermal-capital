@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import functools
 import json
 import math
 import pathlib
@@ -504,6 +505,7 @@ RAW_ASSETS: dict[str, list[dict[str, Any]]] = {
 }
 
 
+@functools.lru_cache(maxsize=16)
 def _load_city_heatmap_tiles(city_key: str = "nyc") -> list[dict[str, Any]]:
     """Load FortyGuard 100m grid tiles for New York City."""
     citywide_path = PROBES_DIR / "nyc_citywide_tcm.json"
@@ -521,6 +523,25 @@ def _load_city_heatmap_tiles(city_key: str = "nyc") -> list[dict[str, Any]]:
         return []
 
 
+@functools.lru_cache(maxsize=16)
+def _load_city_tile_centroids(city_key: str = "nyc") -> list[tuple[float, float, dict[str, Any], int]]:
+    """Pre-computed (avg_lng, avg_lat, tile, tile_idx) list for fast spatial distance lookup."""
+    tiles = _load_city_heatmap_tiles(city_key)
+    centroids: list[tuple[float, float, dict[str, Any], int]] = []
+    for idx, t in enumerate(tiles):
+        geom = t.get("geometry", {})
+        coords = geom.get("coordinates", [])
+        if not coords or not coords[0]:
+            continue
+        c_list = coords[0]
+        n = len(c_list)
+        avg_lng = sum(pt[0] for pt in c_list) / n
+        avg_lat = sum(pt[1] for pt in c_list) / n
+        centroids.append((avg_lng, avg_lat, t, idx))
+    return centroids
+
+
+@functools.lru_cache(maxsize=16)
 def _load_city_exceedance_persistence(city_key: str = "nyc") -> tuple[dict[int, float], dict[int, float]]:
     """Load FortyGuard exceedance and persistence tiles mapping tile_idx -> value."""
     exc_map: dict[int, float] = {}
@@ -573,7 +594,6 @@ def _find_nearest_tile(
         coords = geom.get("coordinates", [])
         if not coords or not coords[0]:
             continue
-        # Average coordinate of polygon
         c_list = coords[0]
         avg_lng = sum(pt[0] for pt in c_list) / len(c_list)
         avg_lat = sum(pt[1] for pt in c_list) / len(c_list)
@@ -587,11 +607,37 @@ def _find_nearest_tile(
     return best_tile, best_idx
 
 
+def _find_nearest_tile_fast(
+    lat: float,
+    lng: float,
+    centroids: list[tuple[float, float, dict[str, Any], int]],
+) -> tuple[dict[str, Any], int]:
+    """Find the closest FortyGuard 100m tile using pre-calculated polygon centroids."""
+    if not centroids:
+        return {}, -1
+
+    best_dist = float("inf")
+    best_tile = centroids[0][2]
+    best_idx = centroids[0][3]
+
+    for avg_lng, avg_lat, t, idx in centroids:
+        dx = avg_lng - lng
+        dy = avg_lat - lat
+        d_sq = dx * dx + dy * dy
+        if d_sq < best_dist:
+            best_dist = d_sq
+            best_tile = t
+            best_idx = idx
+
+    return best_tile, best_idx
+
+
+@functools.lru_cache(maxsize=32)
 def get_city_public_assets(city_key: str = "nyc") -> list[PublicAsset]:
     """Retrieve all public assets for a city enriched with observed FortyGuard microclimate data."""
     city_norm = city_key.lower().strip()
     raw_list = RAW_ASSETS.get(city_norm, RAW_ASSETS["nyc"])
-    tiles = _load_city_heatmap_tiles(city_norm)
+    centroids = _load_city_tile_centroids(city_norm)
     exc_map, per_map = _load_city_exceedance_persistence(city_norm)
 
     enriched_assets: list[PublicAsset] = []
@@ -599,7 +645,7 @@ def get_city_public_assets(city_key: str = "nyc") -> list[PublicAsset]:
     for raw in raw_list:
         lat = raw["latitude"]
         lng = raw["longitude"]
-        matched_tile, tile_idx = _find_nearest_tile(lat, lng, tiles)
+        matched_tile, tile_idx = _find_nearest_tile_fast(lat, lng, centroids)
         t_props = matched_tile.get("properties", {}) if matched_tile else {}
 
         peak_c = float(t_props.get("max_temperature", t_props.get("temperature", 38.5)))

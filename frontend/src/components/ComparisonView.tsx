@@ -3,6 +3,7 @@ import { CandidateSiteSummary, ComparisonResponse, RegionType } from "../types";
 import { compareSites } from "../services/api";
 import { Columns, Info, Loader2, X } from "lucide-react";
 import { getRiskColor } from "../utils/formatters";
+import { useTemperature } from "../context/TemperatureContext";
 
 interface ComparisonViewProps {
   selectedSiteIds: string[];
@@ -22,6 +23,7 @@ export const ComparisonView: React.FC<ComparisonViewProps> = ({
   const [data, setData] = useState<ComparisonResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { unit } = useTemperature();
 
   // Close on Escape key
   useEffect(() => {
@@ -153,14 +155,29 @@ export const ComparisonView: React.FC<ComparisonViewProps> = ({
                         <td className="p-3 font-medium text-slate-700">
                           <div>{row.label}</div>
                           {row.units && (
-                            <span className="text-[10px] text-slate-500 font-mono">({row.units})</span>
+                            <span className="text-[10px] text-slate-500 font-mono">
+                              ({row.units === "°C (°F)" ? (unit === "F" ? "°F (°C)" : "°C (°F)") : row.units})
+                            </span>
                           )}
                         </td>
                         {data.compared_sites.map((s) => {
                           const val = row.values[s.site_id];
+                          let displayVal = val !== undefined ? String(val) : "—";
+
+                          // Format dual temperature string if matched
+                          if (typeof displayVal === "string" && displayVal.includes("°C") && displayVal.includes("°F")) {
+                            const match = displayVal.match(/([0-9.]+)\s*°C\s*\(([0-9.]+)\s*°F\)/);
+                            if (match) {
+                              displayVal =
+                                unit === "F"
+                                  ? `${match[2]}°F (${match[1]}°C)`
+                                  : `${match[1]}°C (${match[2]}°F)`;
+                            }
+                          }
+
                           return (
                             <td key={s.site_id} className="p-3 border-l border-slate-100 font-mono font-semibold text-slate-900">
-                              {val !== undefined ? String(val) : "—"}
+                              {displayVal}
                             </td>
                           );
                         })}

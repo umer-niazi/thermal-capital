@@ -12,10 +12,12 @@ import {
   SimulationResponse,
 } from "../types";
 import {
+  celsiusToFahrenheit,
   formatCurrency,
   getAssetTypeLabel,
   getRiskColor,
 } from "../utils/formatters";
+import { useTemperature } from "../context/TemperatureContext";
 import { createGeoJSONCircle } from "../utils/geoUtils";
 import {
   getDistanceMeters,
@@ -185,6 +187,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
   const [isMobileLegendOpen, setIsMobileLegendOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { unit, formatTemp, formatDelta } = useTemperature();
 
   const layerCfg = LAYER_CONFIGS[activeLayer] || LAYER_CONFIGS.tcm_peak;
 
@@ -256,7 +259,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
           // Adjust color metric depending on active layer
           if (activeLayer === "tcm_peak" || activeLayer === "tcm_mean") {
             props.color_metric = Math.max(24.0, origColorMetric - totalCoolingC);
-            props.display_value = `${(origColorMetric - totalCoolingC).toFixed(1)}°C (↓ ${totalCoolingC.toFixed(1)}°C modeled)`;
+            props.display_value = `${formatTemp(origColorMetric - totalCoolingC)} (↓ ${formatDelta(totalCoolingC, 1, "")} modeled)`;
           } else if (activeLayer === "exceedance") {
             const redPct = Math.min(60.0, totalCoolingC * 16.0);
             const origExc = Number(props.color_metric ?? 6.0);
@@ -660,9 +663,9 @@ export const MapViewer: React.FC<MapViewerProps> = ({
                   <span class="text-slate-500">${layerCfg.shortLabel}:</span> <strong class="font-mono text-slate-900">${props.display_value}</strong>
                 </div>
                 <div class="text-[11px] text-slate-600 space-y-0.5 border-t border-slate-100 pt-1">
-                  <div>Baseline peak: <strong class="font-mono text-slate-900">${props.peak_c ? Number(props.peak_c).toFixed(1) + "°C" : "—"}</strong> (${props.peak_f ? Number(props.peak_f).toFixed(1) + "°F" : "—"})</div>
-                  ${isScenario && props.scenario_peak_c ? `<div>Modeled scenario peak: <strong class="font-mono text-brand-700 font-bold">${Number(props.scenario_peak_c).toFixed(1)}°C (↓ ${Number(props.modeled_delta_c).toFixed(1)}°C)</strong></div>` : ""}
-                  <div>Mean temperature: <strong class="font-mono text-slate-900">${props.mean_c ? Number(props.mean_c).toFixed(1) + "°C" : "—"}</strong></div>
+                  <div>Baseline peak: <strong class="font-mono text-slate-900">${formatTemp(props.peak_c)}</strong> (${unit === "F" ? (props.peak_c ? Number(props.peak_c).toFixed(1) + "°C" : "—") : (props.peak_f ? Number(props.peak_f).toFixed(1) + "°F" : "—")})</div>
+                  ${isScenario && props.scenario_peak_c ? `<div>Modeled scenario peak: <strong class="font-mono text-brand-700 font-bold">${formatTemp(props.scenario_peak_c)} (↓ ${formatDelta(props.modeled_delta_c, 1, "")})</strong></div>` : ""}
+                  <div>Mean temperature: <strong class="font-mono text-slate-900">${formatTemp(props.mean_c)}</strong></div>
                   ${props.exceedance_hours !== undefined ? `<div>Hours &gt; 35°C: <strong class="font-mono text-slate-900">${Number(props.exceedance_hours).toFixed(1)}h</strong></div>` : ""}
                 </div>
               </div>
@@ -1198,9 +1201,9 @@ export const MapViewer: React.FC<MapViewerProps> = ({
             onClick={() => setScenarioViewMode("baseline")}
             aria-pressed={scenarioViewMode === "baseline"}
             aria-label="View FortyGuard baseline heat observations"
-            className={`px-2.5 py-1 text-xs rounded font-medium transition-all focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[30px] flex-shrink-0 ${
+            className={`px-2.5 py-1 text-xs rounded font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[30px] flex-shrink-0 ${
               scenarioViewMode === "baseline"
-                ? "bg-slate-900 text-white font-semibold shadow-xs"
+                ? "bg-slate-900 text-white shadow-xs"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
@@ -1211,9 +1214,9 @@ export const MapViewer: React.FC<MapViewerProps> = ({
             onClick={() => setScenarioViewMode("scenario")}
             aria-pressed={scenarioViewMode === "scenario"}
             aria-label="View proposed plan modeled cooling scenario"
-            className={`flex items-center gap-1.5 px-2.5 py-1 text-xs rounded font-medium transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[30px] flex-shrink-0 ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 text-xs rounded font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[30px] flex-shrink-0 ${
               scenarioViewMode === "scenario"
-                ? "bg-brand-600 text-white font-semibold shadow-xs"
+                ? "bg-brand-600 text-white shadow-xs"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
@@ -1248,9 +1251,9 @@ export const MapViewer: React.FC<MapViewerProps> = ({
                 onClick={() => onChangeLayer(layerKey)}
                 aria-pressed={isActive}
                 aria-label={`Show ${cfg.label} layer`}
-                className={`px-2 py-0.5 text-xs rounded transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[28px] flex-shrink-0 ${
+                className={`px-2 py-0.5 text-xs rounded font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[28px] flex-shrink-0 ${
                   isActive
-                    ? "bg-slate-900 text-white font-medium shadow-xs"
+                    ? "bg-slate-900 text-white shadow-xs"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                 }`}
               >
@@ -1278,7 +1281,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
               onClick={() => setAssetFilter(item.key)}
               aria-pressed={assetFilter === item.key}
               aria-label={`Filter by ${item.label}`}
-              className={`px-1.5 py-0.5 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[26px] flex-shrink-0 ${
+              className={`px-1.5 py-0.5 rounded font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[26px] flex-shrink-0 ${
                 assetFilter === item.key
                   ? "bg-slate-200 text-slate-900 font-semibold"
                   : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
@@ -1376,7 +1379,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         <div className="absolute top-2 sm:top-3 right-12 sm:right-14 z-10 bg-white border border-brand-300 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded shadow-xs flex items-center gap-1.5 sm:gap-2 text-xs text-slate-800 max-w-[200px] sm:max-w-none truncate">
           <Layers className="w-3.5 h-3.5 text-brand-600 flex-shrink-0" />
           <span className="truncate">
-            Relief: <strong className="text-brand-700">-{activeSimulation.modeled_impact.peak_reduction_c.toFixed(1)}°C</strong> ({formatCurrency(activeSimulation.total_estimated_cost)})
+            Relief: <strong className="text-brand-700">{formatDelta(activeSimulation.modeled_impact.peak_reduction_c)}</strong> ({formatCurrency(activeSimulation.total_estimated_cost)})
           </span>
         </div>
       )}
@@ -1420,7 +1423,9 @@ export const MapViewer: React.FC<MapViewerProps> = ({
           <div>
             <div className="flex items-center justify-between gap-2 mb-0.5">
               <span className="font-semibold text-slate-800 text-[11px]">{layerCfg.label}</span>
-              <span className="text-[10px] text-slate-500 font-mono">({layerCfg.units})</span>
+              <span className="text-[10px] text-slate-500 font-mono">
+                ({(activeLayer === "tcm_peak" || activeLayer === "tcm_mean") ? `°${unit}` : layerCfg.units})
+              </span>
             </div>
             <div className="text-[10px] text-slate-400 mb-1 leading-tight">
               Peak modeled heat conditions (July 15–21, 2024)
@@ -1434,12 +1439,19 @@ export const MapViewer: React.FC<MapViewerProps> = ({
                 }}
               />
               <div className="flex justify-between text-[10px] text-slate-600 font-mono">
-                {dynamicLayerStats.stops.map((s, idx) => (
-                  <span key={idx}>
-                    {s[0]}
-                    {layerCfg.units === "°C" ? "°" : ""}
-                  </span>
-                ))}
+                {dynamicLayerStats.stops.map((s, idx) => {
+                  const isTempLayer = activeLayer === "tcm_peak" || activeLayer === "tcm_mean";
+                  const stopLabel = isTempLayer && unit === "F"
+                    ? `${Math.round(celsiusToFahrenheit(s[0]))}°`
+                    : isTempLayer
+                    ? `${s[0]}°`
+                    : `${s[0]}`;
+                  return (
+                    <span key={idx}>
+                      {stopLabel}
+                    </span>
+                  );
+                })}
               </div>
             </div>
           </div>

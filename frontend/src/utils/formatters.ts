@@ -1,8 +1,73 @@
-import { AssetType, HeatRiskLevel } from "../types";
+import { AssetType, HeatRiskLevel, TemperatureUnit } from "../types";
+
+export function celsiusToFahrenheit(celsius: number): number {
+  return (celsius * 9.0) / 5.0 + 32.0;
+}
+
+export function fahrenheitToCelsius(fahrenheit: number): number {
+  return ((fahrenheit - 32.0) * 5.0) / 9.0;
+}
+
+export function celsiusDeltaToFahrenheit(deltaCelsius: number): number {
+  return deltaCelsius * 1.8;
+}
+
+export function formatTemperature(
+  celsius: number | null | undefined,
+  unit: TemperatureUnit = "F",
+  fractionDigits: number = 1
+): string {
+  if (celsius === null || celsius === undefined || isNaN(celsius)) return "—";
+  const val = unit === "F" ? celsiusToFahrenheit(celsius) : celsius;
+  return `${val.toFixed(fractionDigits)}°${unit}`;
+}
+
+export function formatTemperatureValue(
+  celsius: number | null | undefined,
+  unit: TemperatureUnit = "F",
+  fractionDigits: number = 1
+): string {
+  if (celsius === null || celsius === undefined || isNaN(celsius)) return "0";
+  const val = unit === "F" ? celsiusToFahrenheit(celsius) : celsius;
+  return val.toFixed(fractionDigits);
+}
+
+export function formatTemperatureDelta(
+  deltaCelsius: number | null | undefined,
+  unit: TemperatureUnit = "F",
+  fractionDigits: number = 1,
+  prefix: string = "-"
+): string {
+  if (deltaCelsius === null || deltaCelsius === undefined || isNaN(deltaCelsius)) return "—";
+  const absVal = Math.abs(deltaCelsius);
+  const converted = unit === "F" ? celsiusDeltaToFahrenheit(absVal) : absVal;
+  return `${prefix}${converted.toFixed(fractionDigits)}°${unit}`;
+}
+
+export function formatTemperatureRange(
+  minCelsius: number | null | undefined,
+  maxCelsius: number | null | undefined,
+  unit: TemperatureUnit = "F",
+  fractionDigits: number = 1
+): string {
+  if (
+    minCelsius === null ||
+    minCelsius === undefined ||
+    isNaN(minCelsius) ||
+    maxCelsius === null ||
+    maxCelsius === undefined ||
+    isNaN(maxCelsius)
+  ) {
+    return "—";
+  }
+  const minVal = unit === "F" ? celsiusToFahrenheit(minCelsius) : minCelsius;
+  const maxVal = unit === "F" ? celsiusToFahrenheit(maxCelsius) : maxCelsius;
+  return `${minVal.toFixed(fractionDigits)}–${maxVal.toFixed(fractionDigits)}°${unit}`;
+}
 
 export function formatTemp(celsius: number | null | undefined, fahrenheit?: number | null | undefined): string {
   if (celsius === null || celsius === undefined || isNaN(celsius)) return "—";
-  const f = fahrenheit ?? (celsius * 9.0) / 5.0 + 32.0;
+  const f = fahrenheit ?? celsiusToFahrenheit(celsius);
   return `${celsius.toFixed(1)}°C / ${f.toFixed(1)}°F`;
 }
 

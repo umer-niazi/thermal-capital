@@ -114,4 +114,23 @@ describe("PlanningBriefModal Component", () => {
     fireEvent.click(closeBtn);
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it("formats modeled relief in °F by default (2.1°C -> -3.8°F)", async () => {
+    const onClose = vi.fn();
+
+    render(
+      <PlanningBriefModal
+        cityConfig={mockCity}
+        optResult={null}
+        onClose={onClose}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("HEAT ADAPTATION PLANNING BRIEF")).toBeInTheDocument();
+    });
+
+    // Modeled relief: 2.1°C -> -3.8°F
+    expect(screen.getByText("-3.8°F")).toBeInTheDocument();
+  });
 });

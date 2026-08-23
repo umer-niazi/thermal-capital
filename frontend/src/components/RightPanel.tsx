@@ -35,6 +35,7 @@ interface RightPanelProps {
   onPlanUpdated: (simulation: SimulationResponse | null) => void;
   placedInterventions: PlacedIntervention[];
   onAddIntervention: (item: Omit<PlacedIntervention, "id" | "created_at">) => void;
+  onBatchAddInterventions?: (items: Array<Omit<PlacedIntervention, "id" | "created_at">>) => void;
   onRemoveIntervention: (id: string) => void;
   onClearAssetInterventions: (assetId?: string) => void;
   activePlacementTool: PlacedInterventionType | null;
@@ -58,6 +59,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
   onPlanUpdated,
   placedInterventions,
   onAddIntervention,
+  onBatchAddInterventions,
   onRemoveIntervention,
   onClearAssetInterventions,
   activePlacementTool,
@@ -221,6 +223,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
             onPlanUpdated={onPlanUpdated}
             placedInterventions={placedInterventions}
             onAddIntervention={onAddIntervention}
+            onBatchAddInterventions={onBatchAddInterventions}
             onRemoveIntervention={onRemoveIntervention}
             onClearAssetInterventions={onClearAssetInterventions}
             activePlacementTool={activePlacementTool}

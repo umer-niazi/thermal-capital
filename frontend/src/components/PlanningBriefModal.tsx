@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { BudgetOptimizationResult, CityConfig, PlanningReport } from "../types";
 import { generateReport } from "../services/api";
 import { formatCurrency, formatNumber } from "../utils/formatters";
+import { useTemperature } from "../context/TemperatureContext";
+import { ProgressStageCard } from "./ProgressStageCard";
 import {
   Check,
   Copy,
   FileText,
-  Loader2,
   Printer,
   X,
 } from "lucide-react";
@@ -26,6 +27,7 @@ export const PlanningBriefModal: React.FC<PlanningBriefModalProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
+  const { unit, formatTemp, formatDelta } = useTemperature();
 
   // Close on Escape key
   useEffect(() => {
@@ -73,6 +75,16 @@ export const PlanningBriefModal: React.FC<PlanningBriefModalProps> = ({
   const handleCopyMarkdown = () => {
     if (!report) return;
 
+    const peakObservedStr =
+      unit === "F"
+        ? `${report.observed_baseline_summary.observed_peak_max_f}°F (${report.observed_baseline_summary.observed_peak_max_c}°C)`
+        : `${report.observed_baseline_summary.observed_peak_max_c}°C (${report.observed_baseline_summary.observed_peak_max_f}°F)`;
+
+    const peakReliefStr =
+      unit === "F"
+        ? `-${report.modeled_outcomes_summary.portfolio_avg_peak_reduction_f}°F (-${report.modeled_outcomes_summary.portfolio_avg_peak_reduction_c}°C)`
+        : `-${report.modeled_outcomes_summary.portfolio_avg_peak_reduction_c}°C (-${report.modeled_outcomes_summary.portfolio_avg_peak_reduction_f}°F)`;
+
     const md = `
 # ${report.title}
 **Report ID:** ${report.report_id}  
@@ -85,7 +97,7 @@ ${report.executive_summary}
 
 ## 2. Baseline FortyGuard Heat Observations
 - **Study Area:** ${report.city} (${report.observed_baseline_summary.fortyguard_tiles_count} FortyGuard 100m ambient grid tiles)
-- **Peak Observed Temperature:** ${report.observed_baseline_summary.observed_peak_max_c}°C (${report.observed_baseline_summary.observed_peak_max_f}°F)
+- **Peak Observed Temperature:** ${peakObservedStr}
 - **Data Provenance:** ${report.observed_baseline_summary.data_provenance}
 
 ## 3. Proposed Capital Portfolio
@@ -95,7 +107,7 @@ ${report.executive_summary}
 - **Target Assets Covered:** ${report.proposed_portfolio.total_assets_covered} municipal locations
 
 ## 4. Modeled Outcomes & Thermal Benefits
-- **Average Local Peak Reduction:** -${report.modeled_outcomes_summary.portfolio_avg_peak_reduction_c}°C (-${report.modeled_outcomes_summary.portfolio_avg_peak_reduction_f}°F)
+- **Average Local Peak Reduction:** ${peakReliefStr}
 - **Extreme Heat Hours Reduction:** -${report.modeled_outcomes_summary.portfolio_avg_hours_reduction_pct}%
 - **Benefited Daily Citizens:** ${formatNumber(report.modeled_outcomes_summary.total_benefited_population)} / day
 
@@ -165,9 +177,17 @@ ${report.methodology_and_assumptions.map((m) => `- ${m}`).join("\n")}
         {/* Document Content - Expanded naturally across multiple pages when printing */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-5 sm:space-y-6 custom-scrollbar bg-white text-slate-800 font-sans printable-document-content">
           {loading ? (
-            <div className="h-64 flex flex-col items-center justify-center text-slate-500 space-y-2">
-              <Loader2 className="w-6 h-6 animate-spin text-slate-600" />
-              <p className="text-xs">Compiling action plan brief...</p>
+            <div className="py-12">
+              <ProgressStageCard
+                title="Generating Heat Mitigation Planning Brief"
+                subtitle={`Compiling municipal brief for ${cityConfig.name}, ${cityConfig.state}`}
+                stages={[
+                  { id: "baseline", label: "Retrieving FortyGuard microclimate baseline observations", status: "completed" },
+                  { id: "costs", label: "Itemizing municipal capital intervention unit costs", status: "completed" },
+                  { id: "modeling", label: "Modeling localized thermal cooling & user protection", status: "active" },
+                  { id: "doc", label: "Compiling municipal policy document & recommendations", status: "pending" },
+                ]}
+              />
             </div>
           ) : error || !report ? (
             <div className="p-4 rounded bg-red-50 border border-red-200 text-red-700 text-xs">
@@ -219,7 +239,7 @@ ${report.methodology_and_assumptions.map((m) => `- ${m}`).join("\n")}
                   <div className="bg-slate-50 border border-slate-200 p-2.5 rounded print:bg-slate-50/50">
                     <span className="text-[10px] text-slate-500 block">Modeled Peak Relief</span>
                     <span className="text-sm font-bold text-brand-700 font-mono">
-                      -{report.modeled_outcomes_summary.portfolio_avg_peak_reduction_c}°C
+                      {formatDelta(report.modeled_outcomes_summary.portfolio_avg_peak_reduction_c)}
                     </span>
                   </div>
                   <div className="bg-slate-50 border border-slate-200 p-2.5 rounded print:bg-slate-50/50">
@@ -282,20 +302,27 @@ ${report.methodology_and_assumptions.map((m) => `- ${m}`).join("\n")}
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 bg-white">
-                      {report.target_assets_table.map((row, idx) => (
-                        <tr key={idx} className="avoid-break">
-                          <td className="p-2.5 font-medium text-slate-900">
-                            <div>{row.asset_name}</div>
-                            <span className="text-[10px] text-slate-500 font-mono">
-                              {row.asset_id} • {row.asset_type}
-                            </span>
-                          </td>
-                          <td className="p-2.5 font-mono text-slate-700">{row.observed_peak_c}</td>
-                          <td className="p-2.5 text-slate-600">{row.interventions_package}</td>
-                          <td className="p-2.5 text-right font-mono text-slate-900">{row.allocated_cost}</td>
-                          <td className="p-2.5 text-right font-mono font-bold text-brand-700">{row.modeled_peak_reduction}</td>
-                        </tr>
-                      ))}
+                      {report.target_assets_table.map((row, idx) => {
+                        const peakNum = parseFloat(row.observed_peak_c.replace(/[^\d.-]/g, ""));
+                        const deltaNum = Math.abs(parseFloat(row.modeled_peak_reduction.replace(/[^\d.-]/g, "")));
+                        const displayPeak = !isNaN(peakNum) ? formatTemp(peakNum) : row.observed_peak_c;
+                        const displayDelta = !isNaN(deltaNum) ? formatDelta(deltaNum) : row.modeled_peak_reduction;
+
+                        return (
+                          <tr key={idx} className="avoid-break">
+                            <td className="p-2.5 font-medium text-slate-900">
+                              <div>{row.asset_name}</div>
+                              <span className="text-[10px] text-slate-500 font-mono">
+                                {row.asset_id} • {row.asset_type}
+                              </span>
+                            </td>
+                            <td className="p-2.5 font-mono text-slate-700">{displayPeak}</td>
+                            <td className="p-2.5 text-slate-600">{row.interventions_package}</td>
+                            <td className="p-2.5 text-right font-mono text-slate-900">{row.allocated_cost}</td>
+                            <td className="p-2.5 text-right font-mono font-bold text-brand-700">{displayDelta}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

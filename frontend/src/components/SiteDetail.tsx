@@ -1,5 +1,6 @@
 import React from "react";
 import { PublicAsset } from "../types";
+import { useTemperature } from "../context/TemperatureContext";
 import {
   formatNumber,
   formatTempC,
@@ -24,6 +25,7 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
   onBack,
   onPlanIntervention,
 }) => {
+  const { unit, formatTemp } = useTemperature();
   const obs = asset.observed_heat;
   const risk = getRiskColor(asset.heat_risk_level);
 
@@ -103,8 +105,10 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
         <div className="bg-white border border-slate-200 p-2.5 rounded">
           <span className="text-[11px] text-slate-600 block mb-0.5">Peak Temperature</span>
           <div className="font-mono text-sm font-bold text-slate-900">
-            {formatTempC(obs.peak_temperature_c)}
-            <span className="text-[11px] font-normal text-slate-500 ml-1">({formatTempF(obs.peak_temperature_f)})</span>
+            {formatTemp(obs.peak_temperature_c)}
+            <span className="text-[11px] font-normal text-slate-500 ml-1">
+              ({unit === "F" ? formatTempC(obs.peak_temperature_c) : formatTempF(obs.peak_temperature_f)})
+            </span>
           </div>
         </div>
 
@@ -119,8 +123,10 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
         <div className="bg-white border border-slate-200 p-2.5 rounded">
           <span className="text-[11px] text-slate-600 block mb-0.5">Overnight Minimum</span>
           <div className="font-mono text-sm font-bold text-slate-900">
-            {formatTempC(obs.overnight_min_c)}
-            <span className="text-[11px] font-normal text-slate-500 ml-1">({formatTempF(obs.overnight_min_f)})</span>
+            {formatTemp(obs.overnight_min_c)}
+            <span className="text-[11px] font-normal text-slate-500 ml-1">
+              ({unit === "F" ? formatTempC(obs.overnight_min_c) : formatTempF(obs.overnight_min_f)})
+            </span>
           </div>
         </div>
       </div>
@@ -151,8 +157,8 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
             asset.priority_reasons.map((r, i) => <li key={i} className="text-slate-700">{r}</li>)
           ) : (
             <>
-              <li>High afternoon peak thermal exposure ({obs.peak_temperature_c.toFixed(1)}°C)</li>
-              <li>Limited overnight cooling recovery ({obs.overnight_min_c.toFixed(1)}°C minimum)</li>
+              <li>High afternoon peak thermal exposure ({formatTemp(obs.peak_temperature_c)})</li>
+              <li>Limited overnight cooling recovery ({formatTemp(obs.overnight_min_c)} minimum)</li>
               <li>Extended heat persistence ({obs.hours_above_35c.toFixed(1)}h exceeding 35°C)</li>
               <li>High daily pedestrian and transit usage (~{formatNumber(asset.daily_visitors)} citizens)</li>
               <li>Severe vegetative canopy deficit ({obs.canopy_pct.toFixed(0)}% canopy)</li>

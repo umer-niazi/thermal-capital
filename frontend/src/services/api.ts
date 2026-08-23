@@ -65,11 +65,26 @@ export const DEFAULT_INTERVENTION_COSTS: Record<string, InterventionCostDetail> 
   },
 };
 
+// ---------------------------------------------------------------------------
+// In-Memory Client Cache Layer
+// ---------------------------------------------------------------------------
+const memoryCache = new Map<string, any>();
+
+export function clearApiCache(): void {
+  memoryCache.clear();
+}
+
 export async function fetchInterventionCosts(): Promise<Record<string, InterventionCostDetail>> {
+  const cacheKey = "costs:default";
+  if (memoryCache.has(cacheKey)) {
+    return memoryCache.get(cacheKey);
+  }
   try {
     const resp = await fetch(`${API_BASE}/interventions/costs`);
     if (resp.ok) {
-      return await resp.json();
+      const data = await resp.json();
+      memoryCache.set(cacheKey, data);
+      return data;
     }
   } catch {
     // Fall back to client default benchmarks
@@ -77,27 +92,54 @@ export async function fetchInterventionCosts(): Promise<Record<string, Intervent
   return DEFAULT_INTERVENTION_COSTS;
 }
 
+let citiesPromise: Promise<CityConfig[]> | null = null;
 export async function fetchCities(): Promise<CityConfig[]> {
-  const resp = await fetch(`${API_BASE}/cities`);
-  if (!resp.ok) {
-    throw new Error(`Failed to fetch supported cities: ${resp.statusText}`);
+  if (memoryCache.has("cities")) {
+    return memoryCache.get("cities");
   }
-  return resp.json();
+  if (!citiesPromise) {
+    citiesPromise = (async () => {
+      const resp = await fetch(`${API_BASE}/cities`);
+      if (!resp.ok) {
+        throw new Error(`Failed to fetch supported cities: ${resp.statusText}`);
+      }
+      const data = await resp.json();
+      memoryCache.set("cities", data);
+      return data;
+    })();
+  }
+  return citiesPromise;
 }
 
+let coveragePromise: Promise<CoverageSummary | null> | null = null;
 export async function fetchCoverageSummary(): Promise<CoverageSummary | null> {
-  try {
-    const resp = await fetch(`${API_BASE}/coverage`);
-    if (resp.ok) {
-      return await resp.json();
-    }
-  } catch {
-    // Fallback if not ready
+  if (memoryCache.has("coverage")) {
+    return memoryCache.get("coverage");
   }
-  return null;
+  if (!coveragePromise) {
+    coveragePromise = (async () => {
+      try {
+        const resp = await fetch(`${API_BASE}/coverage`);
+        if (resp.ok) {
+          const data = await resp.json();
+          memoryCache.set("coverage", data);
+          return data;
+        }
+      } catch {
+        // Fallback if not ready
+      }
+      return null;
+    })();
+  }
+  return coveragePromise;
 }
 
 export async function fetchAssets(city: string = "nyc", assetType?: string): Promise<PublicAsset[]> {
+  const cacheKey = `assets:${city.toLowerCase()}:${assetType || "all"}`;
+  if (memoryCache.has(cacheKey)) {
+    return memoryCache.get(cacheKey);
+  }
+
   const url = new URL(`${window.location.origin}${API_BASE}/assets`);
   url.searchParams.set("city", city);
   if (assetType) {
@@ -107,15 +149,24 @@ export async function fetchAssets(city: string = "nyc", assetType?: string): Pro
   if (!resp.ok) {
     throw new Error(`Failed to fetch public assets for ${city}: ${resp.statusText}`);
   }
-  return resp.json();
+  const data = await resp.json();
+  memoryCache.set(cacheKey, data);
+  return data;
 }
 
 export async function fetchAssetDetail(assetId: string, city: string = "nyc"): Promise<PublicAsset> {
+  const cacheKey = `asset:${city.toLowerCase()}:${assetId}`;
+  if (memoryCache.has(cacheKey)) {
+    return memoryCache.get(cacheKey);
+  }
+
   const resp = await fetch(`${API_BASE}/assets/${assetId}?city=${city}`);
   if (!resp.ok) {
     throw new Error(`Failed to fetch asset detail for ${assetId}: ${resp.statusText}`);
   }
-  return resp.json();
+  const data = await resp.json();
+  memoryCache.set(cacheKey, data);
+  return data;
 }
 
 export async function simulateInterventions(req: SimulationRequest): Promise<SimulationResponse> {
@@ -131,6 +182,13 @@ export async function simulateInterventions(req: SimulationRequest): Promise<Sim
 }
 
 export async function optimizeBudget(req: BudgetOptimizationRequest): Promise<BudgetOptimizationResult> {
+  const targetIdsKey = (req.target_asset_ids || []).slice().sort().join(",");
+  const cityKey = (req.city || "nyc").toLowerCase();
+  const cacheKey = `optimize:${cityKey}:${req.budget}:${req.strategy}:${targetIdsKey}`;
+  if (memoryCache.has(cacheKey)) {
+    return memoryCache.get(cacheKey);
+  }
+
   const resp = await fetch(`${API_BASE}/optimize`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -139,10 +197,19 @@ export async function optimizeBudget(req: BudgetOptimizationRequest): Promise<Bu
   if (!resp.ok) {
     throw new Error(`Failed to optimize budget: ${resp.statusText}`);
   }
-  return resp.json();
+  const data = await resp.json();
+  memoryCache.set(cacheKey, data);
+  return data;
 }
 
 export async function generateReport(req: BudgetOptimizationRequest): Promise<PlanningReport> {
+  const targetIdsKey = (req.target_asset_ids || []).slice().sort().join(",");
+  const cityKey = (req.city || "nyc").toLowerCase();
+  const cacheKey = `report:${cityKey}:${req.budget}:${req.strategy}:${targetIdsKey}`;
+  if (memoryCache.has(cacheKey)) {
+    return memoryCache.get(cacheKey);
+  }
+
   const resp = await fetch(`${API_BASE}/report`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -151,7 +218,9 @@ export async function generateReport(req: BudgetOptimizationRequest): Promise<Pl
   if (!resp.ok) {
     throw new Error(`Failed to generate planning report: ${resp.statusText}`);
   }
-  return resp.json();
+  const data = await resp.json();
+  memoryCache.set(cacheKey, data);
+  return data;
 }
 
 export async function fetchHeatmapLayer(
@@ -159,6 +228,12 @@ export async function fetchHeatmapLayer(
   region: string = "nyc",
   borough?: string
 ): Promise<GeoJSON.FeatureCollection> {
+  const bKey = borough && borough !== "all" ? borough.toLowerCase() : "all";
+  const cacheKey = `heatmap:${layer}:${region.toLowerCase()}:${bKey}`;
+  if (memoryCache.has(cacheKey)) {
+    return memoryCache.get(cacheKey);
+  }
+
   let url = `${API_BASE}/heatmap?layer=${layer}&region=${region}`;
   if (borough && borough !== "all") {
     url += `&borough=${encodeURIComponent(borough)}`;
@@ -167,15 +242,22 @@ export async function fetchHeatmapLayer(
   if (!resp.ok) {
     throw new Error(`Failed to fetch heatmap layer ${layer} for ${region}: ${resp.statusText}`);
   }
-  return resp.json();
+  const data = await resp.json();
+  memoryCache.set(cacheKey, data);
+  return data;
 }
 
 export async function fetchMethodology(): Promise<Record<string, any>> {
+  if (memoryCache.has("methodology")) {
+    return memoryCache.get("methodology");
+  }
   const resp = await fetch(`${API_BASE}/methodology`);
   if (!resp.ok) {
     throw new Error(`Failed to fetch methodology: ${resp.statusText}`);
   }
-  return resp.json();
+  const data = await resp.json();
+  memoryCache.set("methodology", data);
+  return data;
 }
 
 // ---------------------------------------------------------------------------
