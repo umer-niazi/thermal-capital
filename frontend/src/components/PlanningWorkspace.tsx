@@ -267,7 +267,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
               onClick={() => onSwitchMode("explore")}
               title="Return to exploration view"
               aria-label="Return to exploration view"
-              className="h-7 px-2.5 text-slate-700 hover:text-slate-900 rounded bg-slate-100 hover:bg-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 flex items-center gap-1 text-xs font-medium flex-shrink-0"
+              className="h-8 px-2.5 text-slate-700 hover:text-slate-900 rounded bg-slate-100 hover:bg-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 flex items-center gap-1 text-xs font-medium flex-shrink-0 min-h-[32px]"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Explore</span>
@@ -285,7 +285,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
               aria-label="Select target asset"
               value={asset.asset_id}
               onChange={(e) => onSelectAsset(e.target.value)}
-              className="text-xs bg-slate-50 border border-slate-300 rounded px-2 py-1 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 w-full max-w-[140px] truncate"
+              className="text-xs bg-slate-50 border border-slate-300 rounded px-2 py-1 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 w-full max-w-[130px] sm:max-w-[160px] truncate cursor-pointer"
             >
               {allAssets.map((a) => (
                 <option key={a.asset_id} value={a.asset_id}>
@@ -303,7 +303,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
           >
             {asset.name}
           </h2>
-          <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
+          <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5 flex-wrap">
             <span className="font-mono text-slate-600 font-medium">{asset.asset_id}</span>
             <span>•</span>
             <span>{getAssetTypeLabel(asset.asset_type)}</span>
@@ -323,7 +323,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
             <button
               onClick={() => onClearAssetInterventions(asset.asset_id)}
               aria-label="Reset interventions for this area"
-              className="text-xs font-normal text-slate-500 hover:text-slate-800 flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400"
+              className="text-xs font-normal text-slate-500 hover:text-slate-800 flex items-center gap-1 px-2 py-1 rounded hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[28px]"
             >
               <RotateCcw className="w-3 h-3" />
               <span>Reset</span>
@@ -332,9 +332,9 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
         </div>
 
         {/* 1. Tree Canopy */}
-        <div className="bg-white border border-slate-200 p-2.5 rounded flex items-center justify-between gap-3 text-xs">
+        <div className="bg-white border border-slate-200 p-2.5 rounded flex items-center justify-between gap-2.5 text-xs">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-7 h-7 rounded bg-emerald-50 border border-emerald-200 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded bg-emerald-50 border border-emerald-200 flex items-center justify-center flex-shrink-0">
               <Trees className="w-4 h-4 text-emerald-600" />
             </div>
             <div className="min-w-0">
@@ -343,7 +343,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
                 <button
                   onClick={() => onSelectPlacementTool(activePlacementTool === "tree" ? null : "tree")}
                   title="Click to place tree directly on map"
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium border flex items-center gap-1 transition-colors ${
+                  className={`px-2 py-0.5 rounded text-[10px] font-medium border flex items-center gap-1 transition-colors min-h-[26px] ${
                     activePlacementTool === "tree"
                       ? "bg-slate-900 text-white border-slate-900"
                       : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-300"
@@ -359,20 +359,20 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             <button
               onClick={() => handleStepTrees(false)}
               disabled={treesCount <= 0}
               aria-label="Decrease tree count"
-              className="w-8 h-8 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
+              className="w-9 h-9 sm:w-8 sm:h-8 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
             >
               <Minus className="w-3.5 h-3.5" />
             </button>
-            <span className="font-mono font-bold text-xs w-7 text-center">{treesCount}</span>
+            <span className="font-mono font-bold text-xs w-6 sm:w-7 text-center">{treesCount}</span>
             <button
               onClick={() => handleStepTrees(true)}
               aria-label="Increase tree count"
-              className="w-8 h-8 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
+              className="w-9 h-9 sm:w-8 sm:h-8 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
@@ -380,9 +380,9 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
         </div>
 
         {/* 2. Shade Structure */}
-        <div className="bg-white border border-slate-200 p-2.5 rounded flex items-center justify-between gap-3 text-xs">
+        <div className="bg-white border border-slate-200 p-2.5 rounded flex items-center justify-between gap-2.5 text-xs">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-7 h-7 rounded bg-sky-50 border border-sky-200 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded bg-sky-50 border border-sky-200 flex items-center justify-center flex-shrink-0">
               <Umbrella className="w-4 h-4 text-sky-600" />
             </div>
             <div className="min-w-0">
@@ -391,7 +391,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
                 <button
                   onClick={() => onSelectPlacementTool(activePlacementTool === "shade" ? null : "shade")}
                   title="Click to place shade structure on map"
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium border flex items-center gap-1 transition-colors ${
+                  className={`px-2 py-0.5 rounded text-[10px] font-medium border flex items-center gap-1 transition-colors min-h-[26px] ${
                     activePlacementTool === "shade"
                       ? "bg-slate-900 text-white border-slate-900"
                       : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-300"
@@ -407,20 +407,20 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             <button
               onClick={() => handleStepShade(false)}
               disabled={shadeCount <= 0}
               aria-label="Decrease shade structure count"
-              className="w-8 h-8 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
+              className="w-9 h-9 sm:w-8 sm:h-8 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
             >
               <Minus className="w-3.5 h-3.5" />
             </button>
-            <span className="font-mono font-bold text-xs w-7 text-center">{shadeCount}</span>
+            <span className="font-mono font-bold text-xs w-6 sm:w-7 text-center">{shadeCount}</span>
             <button
               onClick={() => handleStepShade(true)}
               aria-label="Increase shade structure count"
-              className="w-8 h-8 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
+              className="w-9 h-9 sm:w-8 sm:h-8 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
@@ -428,9 +428,9 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
         </div>
 
         {/* 3. Reflective Pavement */}
-        <div className="bg-white border border-slate-200 p-2.5 rounded flex items-center justify-between gap-3 text-xs">
+        <div className="bg-white border border-slate-200 p-2.5 rounded flex items-center justify-between gap-2.5 text-xs">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-7 h-7 rounded bg-amber-50 border border-amber-200 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded bg-amber-50 border border-amber-200 flex items-center justify-center flex-shrink-0">
               <Sun className="w-4 h-4 text-amber-600" />
             </div>
             <div className="min-w-0">
@@ -439,7 +439,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
                 <button
                   onClick={() => onSelectPlacementTool(activePlacementTool === "reflective" ? null : "reflective")}
                   title="Click to place reflective surface footprint on map"
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium border flex items-center gap-1 transition-colors ${
+                  className={`px-2 py-0.5 rounded text-[10px] font-medium border flex items-center gap-1 transition-colors min-h-[26px] ${
                     activePlacementTool === "reflective"
                       ? "bg-slate-900 text-white border-slate-900"
                       : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-300"
@@ -455,20 +455,20 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             <button
               onClick={() => handleStepReflective(false)}
               disabled={coolPaveM2 <= 0}
               aria-label="Decrease reflective surface"
-              className="w-8 h-8 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
+              className="w-9 h-9 sm:w-8 sm:h-8 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
             >
               <Minus className="w-3.5 h-3.5" />
             </button>
-            <span className="font-mono font-bold text-xs w-12 text-center">{coolPaveM2} m²</span>
+            <span className="font-mono font-bold text-xs w-11 sm:w-12 text-center">{coolPaveM2} m²</span>
             <button
               onClick={() => handleStepReflective(true)}
               aria-label="Increase reflective surface"
-              className="w-8 h-8 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
+              className="w-9 h-9 sm:w-8 sm:h-8 rounded border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
@@ -788,7 +788,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
       <div className="grid grid-cols-2 gap-2 pt-1">
         <button
           onClick={onOpenOptimizer}
-          className="px-3 py-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 rounded text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[36px]"
+          className="px-3 py-2.5 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 rounded text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[40px]"
         >
           <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
           <span>Optimize Budget</span>
@@ -796,7 +796,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
 
         <button
           onClick={onOpenReport}
-          className="px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-xs focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[36px]"
+          className="px-3 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-xs focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[40px]"
         >
           <FileText className="w-3.5 h-3.5" />
           <span>Generate Brief</span>
@@ -807,14 +807,14 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
       {showMethodologyModal && (
         <div
           onClick={() => setShowMethodologyModal(false)}
-          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150"
           role="dialog"
           aria-modal="true"
           aria-labelledby="methodology-modal-title"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white border border-slate-300 w-full max-w-2xl max-h-[85vh] rounded-lg shadow-xl flex flex-col overflow-hidden text-slate-900"
+            className="bg-white border border-slate-300 w-full max-w-2xl max-h-[88vh] rounded-lg shadow-xl flex flex-col overflow-hidden text-slate-900"
           >
             {/* Header */}
             <div className="h-12 border-b border-slate-200 px-4 flex items-center justify-between bg-slate-50 flex-shrink-0">
@@ -827,7 +827,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
               <button
                 onClick={() => setShowMethodologyModal(false)}
                 aria-label="Close dialog"
-                className="w-8 h-8 inline-flex items-center justify-center rounded text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-colors"
+                className="w-9 h-9 inline-flex items-center justify-center rounded text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-colors min-h-[36px] min-w-[36px]"
               >
                 <X className="w-4 h-4" />
               </button>

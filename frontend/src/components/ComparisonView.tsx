@@ -60,21 +60,21 @@ export const ComparisonView: React.FC<ComparisonViewProps> = ({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 lg:p-8"
+      className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 lg:p-8"
       role="dialog"
       aria-modal="true"
       aria-labelledby="comparison-title"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white border border-slate-300 w-full max-w-5xl max-h-[90vh] rounded-lg shadow-xl flex flex-col overflow-hidden text-slate-900 animate-in fade-in zoom-in-95 duration-150"
+        className="bg-white border border-slate-300 w-full max-w-5xl max-h-[94vh] sm:max-h-[90vh] rounded-lg shadow-xl flex flex-col overflow-hidden text-slate-900 animate-in fade-in zoom-in-95 duration-150"
       >
         {/* Modal Header */}
-        <div className="h-14 border-b border-slate-200 px-6 flex items-center justify-between flex-shrink-0 bg-slate-50">
-          <div className="flex items-center gap-2.5">
-            <Columns className="w-4 h-4 text-slate-700" />
-            <div>
-              <h2 id="comparison-title" className="text-sm font-bold text-slate-900 tracking-tight">
+        <div className="h-13 sm:h-14 border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between flex-shrink-0 bg-slate-50">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <Columns className="w-4 h-4 text-slate-700 flex-shrink-0" />
+            <div className="min-w-0">
+              <h2 id="comparison-title" className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight truncate">
                 Site Thermal Comparison Matrix ({data?.compared_sites.length || selectedSiteIds.length} Sites)
               </h2>
             </div>
@@ -83,14 +83,14 @@ export const ComparisonView: React.FC<ComparisonViewProps> = ({
           <button
             onClick={onClose}
             aria-label="Close dialog"
-            className="w-9 h-9 inline-flex items-center justify-center rounded text-slate-500 hover:text-slate-900 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
+            className="w-9 h-9 inline-flex items-center justify-center rounded text-slate-500 hover:text-slate-900 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors flex-shrink-0 ml-1"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Modal Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-5 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 custom-scrollbar">
           {loading ? (
             <div className="h-64 flex flex-col items-center justify-center text-slate-500">
               <Loader2 className="w-6 h-6 animate-spin text-slate-600 mb-2" />

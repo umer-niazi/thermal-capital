@@ -68,7 +68,7 @@ export const RankingList: React.FC<RankingListProps> = ({
                       {asset.name}
                     </h3>
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] text-slate-600 mt-0.5">
+                  <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-600 mt-0.5">
                     <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-medium border ${risk.badge}`}>
                       {asset.heat_risk_level} exposure
                     </span>
@@ -87,7 +87,7 @@ export const RankingList: React.FC<RankingListProps> = ({
                     onPlanAsset(asset.asset_id);
                   }}
                   aria-label={`Test cooling interventions on ${asset.name}`}
-                  className="px-2.5 py-1.5 text-xs font-medium text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[30px]"
+                  className="px-3 py-1.5 text-xs font-semibold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[34px]"
                 >
                   <Layers className="w-3 h-3 text-brand-600" />
                   <span>Test</span>

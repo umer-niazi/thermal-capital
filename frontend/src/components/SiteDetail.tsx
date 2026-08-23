@@ -34,7 +34,7 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
         <button
           onClick={onBack}
           aria-label="Back to all priority areas"
-          className="h-8 px-2.5 flex items-center gap-1.5 text-xs text-slate-700 hover:text-slate-900 font-medium rounded bg-white hover:bg-slate-100 border border-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="h-9 px-3 flex items-center gap-1.5 text-xs text-slate-700 hover:text-slate-900 font-medium rounded bg-white hover:bg-slate-100 border border-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[36px]"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>All Priority Areas</span>
@@ -43,7 +43,7 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
         <div className="flex items-center gap-1.5">
           <button
             onClick={onPlanIntervention}
-            className="h-8 flex items-center gap-1.5 px-3 bg-brand-600 hover:bg-brand-700 text-white rounded text-xs font-semibold shadow-xs transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="h-9 flex items-center gap-1.5 px-3.5 bg-brand-600 hover:bg-brand-700 text-white rounded text-xs font-semibold shadow-xs transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[36px]"
           >
             <Layers className="w-3.5 h-3.5" />
             <span>Test</span>
@@ -53,7 +53,7 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
             onClick={onBack}
             aria-label="Close"
             title="Close"
-            className="w-8 h-8 inline-flex items-center justify-center rounded text-slate-500 hover:text-slate-900 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
+            className="w-9 h-9 inline-flex items-center justify-center rounded text-slate-500 hover:text-slate-900 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors min-h-[36px] min-w-[36px]"
           >
             <X className="w-4 h-4" />
           </button>

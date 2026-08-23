@@ -115,29 +115,29 @@ ${report.methodology_and_assumptions.map((m) => `- ${m}`).join("\n")}
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 lg:p-6 animate-in fade-in duration-150 printable-document-container"
+      className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 lg:p-6 animate-in fade-in duration-150 printable-document-container"
       role="dialog"
       aria-modal="true"
       aria-labelledby="planning-brief-title"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white border border-slate-300 w-full max-w-4xl max-h-[90vh] rounded-lg shadow-xl flex flex-col overflow-hidden text-slate-900 printable-document-body"
+        className="bg-white border border-slate-300 w-full max-w-4xl max-h-[94vh] sm:max-h-[90vh] rounded-lg shadow-xl flex flex-col overflow-hidden text-slate-900 printable-document-body"
       >
         {/* Modal Header - Hidden when printing */}
-        <div className="h-14 border-b border-slate-200 px-5 flex items-center justify-between flex-shrink-0 bg-slate-50 print:hidden">
-          <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 text-slate-700" />
-            <h2 id="planning-brief-title" className="text-sm font-bold text-slate-900 tracking-tight">
+        <div className="h-13 sm:h-14 border-b border-slate-200 px-3.5 sm:px-5 flex items-center justify-between flex-shrink-0 bg-slate-50 print:hidden">
+          <div className="flex items-center gap-2 min-w-0">
+            <FileText className="w-4 h-4 text-slate-700 flex-shrink-0" />
+            <h2 id="planning-brief-title" className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight truncate">
               HEAT ADAPTATION PLANNING BRIEF
             </h2>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             <button
               onClick={handleCopyMarkdown}
               aria-label="Copy markdown summary"
-              className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-700 bg-white hover:bg-slate-100 rounded border border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400"
+              className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-700 bg-white hover:bg-slate-100 rounded border border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[32px]"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? "Copied" : "Copy"}</span>
@@ -146,7 +146,7 @@ ${report.methodology_and_assumptions.map((m) => `- ${m}`).join("\n")}
             <button
               onClick={handlePrint}
               aria-label="Print action brief"
-              className="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded transition-colors shadow-xs focus:outline-none focus:ring-2 focus:ring-slate-600 cursor-pointer"
+              className="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded transition-colors shadow-xs focus:outline-none focus:ring-2 focus:ring-slate-600 cursor-pointer min-h-[32px]"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Print</span>
@@ -155,7 +155,7 @@ ${report.methodology_and_assumptions.map((m) => `- ${m}`).join("\n")}
             <button
               onClick={onClose}
               aria-label="Close dialog"
-              className="w-9 h-9 inline-flex items-center justify-center rounded text-slate-500 hover:text-slate-900 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors ml-1"
+              className="w-9 h-9 inline-flex items-center justify-center rounded text-slate-500 hover:text-slate-900 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors ml-0.5 sm:ml-1 flex-shrink-0"
             >
               <X className="w-4 h-4" />
             </button>
@@ -163,7 +163,7 @@ ${report.methodology_and_assumptions.map((m) => `- ${m}`).join("\n")}
         </div>
 
         {/* Document Content - Expanded naturally across multiple pages when printing */}
-        <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar bg-white text-slate-800 font-sans printable-document-content">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-5 sm:space-y-6 custom-scrollbar bg-white text-slate-800 font-sans printable-document-content">
           {loading ? (
             <div className="h-64 flex flex-col items-center justify-center text-slate-500 space-y-2">
               <Loader2 className="w-6 h-6 animate-spin text-slate-600" />
@@ -177,11 +177,11 @@ ${report.methodology_and_assumptions.map((m) => `- ${m}`).join("\n")}
             <div className="max-w-3xl mx-auto space-y-6 print:space-y-5">
               {/* Document Header */}
               <div className="border-b border-slate-300 pb-3 avoid-break">
-                <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-1 flex-wrap gap-1">
                   <span>DOCUMENT ID: {report.report_id}</span>
                   <span>{report.generated_at}</span>
                 </div>
-                <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+                <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-snug">
                   {report.title}
                 </h1>
                 <p className="text-xs text-slate-600 mt-0.5">
@@ -237,8 +237,8 @@ ${report.methodology_and_assumptions.map((m) => `- ${m}`).join("\n")}
                   3. Itemized Interventions &amp; Cost Benchmarks
                 </h2>
 
-                <div className="border border-slate-200 rounded overflow-hidden">
-                  <table className="w-full text-xs text-left border-collapse font-sans">
+                <div className="border border-slate-200 rounded overflow-x-auto custom-scrollbar">
+                  <table className="w-full text-xs text-left border-collapse font-sans min-w-[540px]">
                     <thead className="bg-slate-50 text-slate-700 border-b border-slate-200">
                       <tr>
                         <th className="p-2.5 font-semibold">Category</th>
@@ -270,8 +270,8 @@ ${report.methodology_and_assumptions.map((m) => `- ${m}`).join("\n")}
                   4. Priority Assets &amp; Modeled Allocations
                 </h2>
 
-                <div className="border border-slate-200 rounded overflow-hidden">
-                  <table className="w-full text-xs text-left border-collapse font-sans">
+                <div className="border border-slate-200 rounded overflow-x-auto custom-scrollbar">
+                  <table className="w-full text-xs text-left border-collapse font-sans min-w-[540px]">
                     <thead className="bg-slate-50 text-slate-700 border-b border-slate-200">
                       <tr>
                         <th className="p-2.5 font-semibold">Asset</th>

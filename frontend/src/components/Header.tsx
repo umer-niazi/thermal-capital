@@ -30,11 +30,11 @@ export const Header: React.FC<HeaderProps> = ({
   coverageSummary,
 }) => {
   return (
-    <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-3 sm:px-5 lg:px-6 z-20 flex-shrink-0 gap-2">
+    <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-2 sm:px-4 lg:px-6 z-20 flex-shrink-0 gap-1.5 sm:gap-2">
       {/* Left: Brand Title, NYC Focus Selector & Coverage Badge */}
-      <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-        <div className="flex items-baseline gap-2 flex-shrink-0">
-          <span className="font-bold text-base text-slate-900 tracking-tight">
+      <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
+        <div className="flex items-baseline gap-1.5 sm:gap-2 flex-shrink-0">
+          <span className="font-bold text-sm sm:text-base text-slate-900 tracking-tight">
             Thermal Capital
           </span>
           <span className="text-xs text-slate-500 font-normal hidden lg:inline border-l border-slate-200 pl-2">
@@ -43,8 +43,8 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* NYC Focus Selector */}
-        <div className="flex items-center gap-1.5 sm:gap-2 pl-2 sm:pl-3 border-l border-slate-200 min-w-0">
-          <label htmlFor="city-select" className="text-xs font-medium text-slate-600 hidden sm:inline">
+        <div className="flex items-center gap-1 sm:gap-2 pl-1.5 sm:pl-3 border-l border-slate-200 min-w-0">
+          <label htmlFor="city-select" className="text-xs font-medium text-slate-600 hidden md:inline">
             NYC Area:
           </label>
           <select
@@ -52,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({
             aria-label="Select city location"
             value={currentCity.city_key}
             onChange={(e) => onSelectCity(e.target.value)}
-            className="bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded px-2 sm:px-2.5 py-1 text-xs text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 cursor-pointer transition-colors"
+            className="bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded px-1.5 sm:px-2.5 py-1 text-xs text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 cursor-pointer transition-colors max-w-[105px] xs:max-w-[130px] sm:max-w-[180px] truncate"
           >
             {allCities.map((c) => (
               <option key={c.city_key} value={c.city_key}>
@@ -79,13 +79,13 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={() => onSwitchMode("explore")}
           aria-label="1. Identify Risk"
           aria-current={appMode === "explore" ? "step" : undefined}
-          className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 text-xs rounded transition-all font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 ${
+          className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1 text-xs rounded transition-all font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[32px] sm:min-h-[30px] ${
             appMode === "explore"
               ? "bg-slate-900 text-white shadow-xs font-semibold"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
           }`}
         >
-          <Compass className="w-3.5 h-3.5" />
+          <Compass className="w-3.5 h-3.5 flex-shrink-0" />
           <span className="hidden sm:inline">1. Identify Risk</span>
           <span className="sm:hidden">1. Identify</span>
         </button>
@@ -98,26 +98,26 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={() => onSwitchMode("plan")}
           aria-label="2. Intervene & Compare"
           aria-current={appMode === "plan" ? "step" : undefined}
-          className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 text-xs rounded transition-all font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 ${
+          className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1 text-xs rounded transition-all font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[32px] sm:min-h-[30px] ${
             appMode === "plan"
               ? "bg-slate-900 text-white shadow-xs font-semibold"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
           }`}
         >
-          <Layers className="w-3.5 h-3.5" />
+          <Layers className="w-3.5 h-3.5 flex-shrink-0" />
           <span className="hidden sm:inline">2. Intervene &amp; Compare</span>
           <span className="sm:hidden">2. Intervene</span>
         </button>
       </nav>
 
       {/* Right: Secondary Tools & Actions */}
-      <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+      <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
         <button
           onClick={onOpenOptimizer}
           aria-label="Open budget optimizer"
-          className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[32px]"
         >
-          <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
+          <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
           <span className="hidden md:inline">Optimize Budget</span>
           <span className="md:hidden">Optimize</span>
         </button>
@@ -125,9 +125,9 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onOpenReport}
           aria-label="Open planning brief"
-          className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[32px]"
         >
-          <FileText className="w-3.5 h-3.5 text-slate-500" />
+          <FileText className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
           <span className="hidden sm:inline">Planning Brief</span>
           <span className="sm:hidden">Brief</span>
         </button>

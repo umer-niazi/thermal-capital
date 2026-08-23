@@ -83,21 +83,21 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 lg:p-6 animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 lg:p-6 animate-in fade-in duration-150"
       role="dialog"
       aria-modal="true"
       aria-labelledby="budget-optimizer-title"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white border border-slate-300 w-full max-w-4xl max-h-[90vh] rounded-lg shadow-xl flex flex-col overflow-hidden text-slate-900"
+        className="bg-white border border-slate-300 w-full max-w-4xl max-h-[94vh] sm:max-h-[90vh] rounded-lg shadow-xl flex flex-col overflow-hidden text-slate-900"
       >
         {/* Header */}
-        <div className="h-14 border-b border-slate-200 px-5 flex items-center justify-between flex-shrink-0 bg-slate-50">
-          <div className="flex items-center gap-2.5">
-            <SlidersHorizontal className="w-4 h-4 text-slate-700" />
-            <div>
-              <h2 id="budget-optimizer-title" className="text-sm font-bold text-slate-900 tracking-tight">
+        <div className="h-13 sm:h-14 border-b border-slate-200 px-3.5 sm:px-5 flex items-center justify-between flex-shrink-0 bg-slate-50">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <SlidersHorizontal className="w-4 h-4 text-slate-700 flex-shrink-0" />
+            <div className="min-w-0">
+              <h2 id="budget-optimizer-title" className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight truncate">
                 Budget Optimization — {cityConfig.name}, {cityConfig.state}
               </h2>
             </div>
@@ -106,16 +106,16 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
           <button
             onClick={onClose}
             aria-label="Close dialog"
-            className="w-9 h-9 inline-flex items-center justify-center rounded text-slate-500 hover:text-slate-900 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors"
+            className="w-9 h-9 inline-flex items-center justify-center rounded text-slate-500 hover:text-slate-900 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors flex-shrink-0 ml-1"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-4 sm:space-y-5 custom-scrollbar">
           {/* Controls Bar */}
-          <div className="bg-slate-50 border border-slate-200 p-4 rounded space-y-4">
+          <div className="bg-slate-50 border border-slate-200 p-3 sm:p-4 rounded space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Budget Slider */}
               <div className="space-y-1.5">
@@ -135,15 +135,15 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
                   step={25000}
                   value={budget}
                   onChange={(e) => setBudget(Number(e.target.value))}
-                  className="w-full h-1.5 bg-slate-200 rounded appearance-none cursor-pointer accent-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full h-2 sm:h-1.5 bg-slate-200 rounded appearance-none cursor-pointer accent-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
 
-                <div className="flex items-center gap-1.5 pt-1">
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
                   {budgetPresets.map((amt) => (
                     <button
                       key={amt}
                       onClick={() => setBudget(amt)}
-                      className={`px-2.5 py-1 text-xs rounded transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 ${
+                      className={`px-2.5 py-1 text-xs rounded transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[30px] ${
                         budget === amt
                           ? "bg-slate-800 text-white font-semibold"
                           : "bg-white text-slate-700 border border-slate-300 hover:bg-slate-100"
@@ -170,7 +170,7 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
                     <button
                       key={s.key}
                       onClick={() => setStrategy(s.key as OptimizationStrategy)}
-                      className={`p-2 text-left rounded border transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 ${
+                      className={`p-2 text-left rounded border transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[44px] ${
                         strategy === s.key
                           ? "bg-brand-50 border-brand-500 text-brand-900 font-semibold"
                           : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
@@ -246,7 +246,7 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
                   Recommended Site Allocations ({result.asset_allocations.length} Sites)
                 </span>
 
-                <div className="border border-slate-200 rounded overflow-x-auto">
+                <div className="border border-slate-200 rounded overflow-x-auto custom-scrollbar">
                   <table className="w-full text-xs text-left border-collapse font-sans min-w-[620px]">
                     <thead className="bg-slate-50 text-slate-700 border-b border-slate-200">
                       <tr>
@@ -303,19 +303,19 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="h-14 border-t border-slate-200 px-5 flex items-center justify-between flex-shrink-0 bg-slate-50">
+        <div className="h-auto sm:h-14 py-2.5 sm:py-0 border-t border-slate-200 px-3.5 sm:px-5 flex flex-wrap items-center justify-between gap-2 flex-shrink-0 bg-slate-50">
           <button
             onClick={onClose}
-            className="px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-100 rounded border border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400"
+            className="px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-100 rounded border border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[34px]"
           >
             Close
           </button>
 
           {result && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => onOpenReport(result)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-100 rounded border border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-100 rounded border border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[34px]"
               >
                 <FileText className="w-3.5 h-3.5 text-slate-500" />
                 <span>Action Brief</span>
@@ -326,7 +326,7 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
                   onApplyPortfolio(result);
                   onClose();
                 }}
-                className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded shadow-xs transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded shadow-xs transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[34px]"
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>Apply Portfolio to Map</span>

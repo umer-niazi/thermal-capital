@@ -377,7 +377,7 @@ export const App: React.FC = () => {
       ) : (
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative print:hidden">
           {/* Primary Map View */}
-          <main className="flex-1 h-[55vh] lg:h-full relative">
+          <main className="flex-1 h-full w-full relative">
             <MapViewer
               cityConfig={currentCity}
               assets={assets}
