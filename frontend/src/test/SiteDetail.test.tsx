@@ -55,11 +55,14 @@ describe("SiteDetail Component", () => {
     expect(screen.getByText("EXTREME")).toBeInTheDocument();
     expect(screen.getAllByText(/106.2°F/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/41.2°C/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Hours Above 95°F")).toBeInTheDocument();
     expect(screen.getAllByText(/9.0 h/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/\(6.0h run\)/)).toBeInTheDocument();
+    expect(screen.getByText(/exceeding 95°F/)).toBeInTheDocument();
     expect(screen.getByText("Why is this area a priority?")).toBeInTheDocument();
   });
 
-  it("renders primary °C when Celsius preference is active", () => {
+  it("renders primary °C and Hours Above 35°C when Celsius preference is active", () => {
     const onBack = vi.fn();
     const onPlan = vi.fn();
 
@@ -75,6 +78,10 @@ describe("SiteDetail Component", () => {
 
     expect(screen.getAllByText(/41.2°C/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/106.2°F/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Hours Above 35°C")).toBeInTheDocument();
+    expect(screen.getAllByText(/9.0 h/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/\(6.0h run\)/)).toBeInTheDocument();
+    expect(screen.getByText(/exceeding 35°C/)).toBeInTheDocument();
   });
 
   it("calls onPlanIntervention when test intervention button is clicked", () => {

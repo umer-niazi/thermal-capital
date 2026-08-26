@@ -22,7 +22,7 @@ export const RankingList: React.FC<RankingListProps> = ({
   onSelectAsset,
   onPlanAsset,
 }) => {
-  const { formatTemp } = useTemperature();
+  const { unit, formatTemp } = useTemperature();
   return (
     <div className="p-4 space-y-4 text-slate-900">
       {/* City Summary Header */}
@@ -74,7 +74,7 @@ export const RankingList: React.FC<RankingListProps> = ({
                       {asset.heat_risk_level} exposure
                     </span>
                     <span>•</span>
-                    <span>{obs.hours_above_35c.toFixed(1)} hrs &gt; 35°C</span>
+                    <span>{obs.hours_above_35c.toFixed(1)} hrs &gt; {unit === "F" ? "95°F" : "35°C"}</span>
                     <span>•</span>
                     <span className="font-mono">{formatTemp(obs.peak_temperature_c)} peak</span>
                   </div>

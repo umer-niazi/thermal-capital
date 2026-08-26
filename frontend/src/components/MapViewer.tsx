@@ -10,6 +10,7 @@ import {
   PublicAsset,
   ScenarioViewMode,
   SimulationResponse,
+  TemperatureUnit,
 } from "../types";
 import {
   celsiusToFahrenheit,
@@ -62,81 +63,92 @@ interface LayerConfig {
   stops: [number, string][];
 }
 
-const LAYER_CONFIGS: Record<HeatmapLayerType, LayerConfig> = {
-  tcm_peak: {
-    label: "Peak Heat Exposure",
-    shortLabel: "Peak Temp",
-    description: "Afternoon peak ambient temperature during study period (100m grid)",
-    units: "°C",
-    min: 28.0,
-    max: 37.0,
-    stops: [
-      [28.0, "#fef9c3"],
-      [31.5, "#fde047"],
-      [33.5, "#fb923c"],
-      [35.0, "#ea580c"],
-      [36.5, "#dc2626"],
-    ],
-  },
-  tcm_mean: {
-    label: "Daily Average Temperature",
-    shortLabel: "Daily Mean",
-    description: "24-hour mean temperature baseline (100m grid)",
-    units: "°C",
-    min: 24.0,
-    max: 32.0,
-    stops: [
-      [24.0, "#fef9c3"],
-      [26.5, "#fde047"],
-      [28.5, "#fb923c"],
-      [30.0, "#ea580c"],
-      [31.5, "#dc2626"],
-    ],
-  },
-  exceedance: {
-    label: "Hours Above 35°C",
-    shortLabel: "Exceedance",
-    description: "Cumulative hours exceeding 35°C (95°F) threshold",
-    units: "hours",
-    min: 0,
-    max: 15,
-    stops: [
-      [0, "#16a34a"],
-      [3, "#eab308"],
-      [7, "#ea580c"],
-      [12, "#dc2626"],
-    ],
-  },
-  persistence: {
-    label: "Heat Persistence",
-    shortLabel: "Persistence",
-    description: "Longest continuous unbroken hours above 35°C without relief",
-    units: "hours",
-    min: 0,
-    max: 6,
-    stops: [
-      [0, "#16a34a"],
-      [1.5, "#eab308"],
-      [3.5, "#ea580c"],
-      [5.5, "#dc2626"],
-    ],
-  },
-  cooling: {
-    label: "Cooling Degree Hours",
-    shortLabel: "Cooling Burden",
-    description: "Cumulative cooling demand above 20°C baseline",
-    units: "CDH",
-    min: 400,
-    max: 1300,
-    stops: [
-      [400, "#fef9c3"],
-      [700, "#fde047"],
-      [950, "#fb923c"],
-      [1150, "#ea580c"],
-      [1300, "#dc2626"],
-    ],
-  },
-};
+export function getLayerConfigs(unit: TemperatureUnit = "F"): Record<HeatmapLayerType, LayerConfig> {
+  return {
+    tcm_peak: {
+      label: "Peak Heat Exposure",
+      shortLabel: "Peak Temp",
+      description: "Afternoon peak ambient temperature during study period (100m grid)",
+      units: unit === "F" ? "°F" : "°C",
+      min: 28.0,
+      max: 37.0,
+      stops: [
+        [28.0, "#fef9c3"],
+        [31.5, "#fde047"],
+        [33.5, "#fb923c"],
+        [35.0, "#ea580c"],
+        [36.5, "#dc2626"],
+      ],
+    },
+    tcm_mean: {
+      label: "Daily Average Temperature",
+      shortLabel: "Daily Mean",
+      description: "24-hour mean temperature baseline (100m grid)",
+      units: unit === "F" ? "°F" : "°C",
+      min: 24.0,
+      max: 32.0,
+      stops: [
+        [24.0, "#fef9c3"],
+        [26.5, "#fde047"],
+        [28.5, "#fb923c"],
+        [30.0, "#ea580c"],
+        [31.5, "#dc2626"],
+      ],
+    },
+    exceedance: {
+      label: unit === "F" ? "Hours Above 95°F" : "Hours Above 35°C",
+      shortLabel: "Exceedance",
+      description:
+        unit === "F"
+          ? "Cumulative hours exceeding 95°F (35°C) threshold"
+          : "Cumulative hours exceeding 35°C (95°F) threshold",
+      units: "hours",
+      min: 0,
+      max: 15,
+      stops: [
+        [0, "#16a34a"],
+        [3, "#eab308"],
+        [7, "#ea580c"],
+        [12, "#dc2626"],
+      ],
+    },
+    persistence: {
+      label: "Heat Persistence",
+      shortLabel: "Persistence",
+      description:
+        unit === "F"
+          ? "Longest continuous unbroken hours above 95°F without relief"
+          : "Longest continuous unbroken hours above 35°C without relief",
+      units: "hours",
+      min: 0,
+      max: 6,
+      stops: [
+        [0, "#16a34a"],
+        [1.5, "#eab308"],
+        [3.5, "#ea580c"],
+        [5.5, "#dc2626"],
+      ],
+    },
+    cooling: {
+      label: "Cooling Degree Hours",
+      shortLabel: "Cooling Burden",
+      description:
+        unit === "F"
+          ? "Cumulative cooling demand above 68°F baseline"
+          : "Cumulative cooling demand above 20°C baseline",
+      units: "CDH",
+      min: 400,
+      max: 1300,
+      stops: [
+        [400, "#fef9c3"],
+        [700, "#fde047"],
+        [950, "#fb923c"],
+        [1150, "#ea580c"],
+        [1300, "#dc2626"],
+      ],
+    },
+  };
+}
 
 const BASE_MAP_STYLE: maplibregl.StyleSpecification = {
   version: 8,
@@ -189,7 +201,8 @@ export const MapViewer: React.FC<MapViewerProps> = ({
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { unit, formatTemp, formatDelta } = useTemperature();
 
-  const layerCfg = LAYER_CONFIGS[activeLayer] || LAYER_CONFIGS.tcm_peak;
+  const layerConfigs = useMemo(() => getLayerConfigs(unit), [unit]);
+  const layerCfg = layerConfigs[activeLayer] || layerConfigs.tcm_peak;
 
   // Automatically switch to scenario view mode if user is testing interventions in plan mode
   useEffect(() => {
@@ -648,6 +661,21 @@ export const MapViewer: React.FC<MapViewerProps> = ({
           const tileCode = props.tile_id !== undefined ? `T-${String(props.tile_id).padStart(5, "0")}` : "T-00001";
           const isScenario = props.is_modeled_scenario === true || props.is_modeled_scenario === "true";
 
+          let popupDisplayValue = props.display_value;
+          if (!isScenario) {
+            if (activeLayer === "exceedance") {
+              const hrs = props.color_metric ?? props.exceedance_hours ?? props.value ?? 0;
+              popupDisplayValue = `${Number(hrs).toFixed(1)} hrs > ${unit === "F" ? "95°F" : "35°C"}`;
+            } else if (activeLayer === "persistence") {
+              const hrs = props.color_metric ?? props.persistence_hours ?? props.value ?? 0;
+              popupDisplayValue = `${Number(hrs).toFixed(1)} hrs unbroken`;
+            } else if (activeLayer === "tcm_peak") {
+              popupDisplayValue = formatTemp(props.color_metric ?? props.peak_c);
+            } else if (activeLayer === "tcm_mean") {
+              popupDisplayValue = formatTemp(props.color_metric ?? props.mean_c);
+            }
+          }
+
           new maplibregl.Popup({ className: "light-popup", closeButton: true, maxWidth: "270px" })
             .setLngLat(e.lngLat)
             .setHTML(
@@ -660,13 +688,13 @@ export const MapViewer: React.FC<MapViewerProps> = ({
                   </span>
                 </div>
                 <div class="text-slate-700 py-0.5">
-                  <span class="text-slate-500">${layerCfg.shortLabel}:</span> <strong class="font-mono text-slate-900">${props.display_value}</strong>
+                  <span class="text-slate-500">${layerCfg.shortLabel}:</span> <strong class="font-mono text-slate-900">${popupDisplayValue}</strong>
                 </div>
                 <div class="text-[11px] text-slate-600 space-y-0.5 border-t border-slate-100 pt-1">
                   <div>Baseline peak: <strong class="font-mono text-slate-900">${formatTemp(props.peak_c)}</strong> (${unit === "F" ? (props.peak_c ? Number(props.peak_c).toFixed(1) + "°C" : "—") : (props.peak_f ? Number(props.peak_f).toFixed(1) + "°F" : "—")})</div>
                   ${isScenario && props.scenario_peak_c ? `<div>Modeled scenario peak: <strong class="font-mono text-brand-700 font-bold">${formatTemp(props.scenario_peak_c)} (↓ ${formatDelta(props.modeled_delta_c, 1, "")})</strong></div>` : ""}
                   <div>Mean temperature: <strong class="font-mono text-slate-900">${formatTemp(props.mean_c)}</strong></div>
-                  ${props.exceedance_hours !== undefined ? `<div>Hours &gt; 35°C: <strong class="font-mono text-slate-900">${Number(props.exceedance_hours).toFixed(1)}h</strong></div>` : ""}
+                  ${props.exceedance_hours !== undefined ? `<div>Hours &gt; ${unit === "F" ? "95°F" : "35°C"}: <strong class="font-mono text-slate-900">${Number(props.exceedance_hours).toFixed(1)}h</strong></div>` : ""}
                 </div>
               </div>
             `
@@ -1242,7 +1270,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
           </div>
 
           {(["tcm_peak", "tcm_mean", "exceedance", "persistence"] as HeatmapLayerType[]).map((layerKey) => {
-            const cfg = LAYER_CONFIGS[layerKey];
+            const cfg = layerConfigs[layerKey];
             const isActive = activeLayer === layerKey;
 
             return (

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { RankingList } from "../components/RankingList";
 import { CityConfig, PublicAsset } from "../types";
+import { TemperatureProvider } from "../context/TemperatureContext";
 
 const mockCity: CityConfig = {
   city_key: "phoenix",
@@ -117,20 +118,45 @@ describe("RankingList Component", () => {
     expect(onPlan).toHaveBeenCalledWith("PHX-TRN-01");
   });
 
-  it("formats peak temperature in °F by default", () => {
+  it("formats peak temperature and exceedance threshold in °F by default", () => {
     const onSelect = vi.fn();
     const onPlan = vi.fn();
 
     render(
-      <RankingList
-        assets={mockAssets}
-        cityConfig={mockCity}
-        onSelectAsset={onSelect}
-        onPlanAsset={onPlan}
-      />
+      <TemperatureProvider initialUnit="F">
+        <RankingList
+          assets={mockAssets}
+          cityConfig={mockCity}
+          onSelectAsset={onSelect}
+          onPlanAsset={onPlan}
+        />
+      </TemperatureProvider>
     );
 
     expect(screen.getByText(/106.2°F peak/)).toBeInTheDocument();
     expect(screen.getByText(/104.9°F peak/)).toBeInTheDocument();
+    expect(screen.getByText(/9.0 hrs > 95°F/)).toBeInTheDocument();
+    expect(screen.getByText(/8.2 hrs > 95°F/)).toBeInTheDocument();
+  });
+
+  it("formats peak temperature and exceedance threshold in °C when Celsius is active", () => {
+    const onSelect = vi.fn();
+    const onPlan = vi.fn();
+
+    render(
+      <TemperatureProvider initialUnit="C">
+        <RankingList
+          assets={mockAssets}
+          cityConfig={mockCity}
+          onSelectAsset={onSelect}
+          onPlanAsset={onPlan}
+        />
+      </TemperatureProvider>
+    );
+
+    expect(screen.getByText(/41.2°C peak/)).toBeInTheDocument();
+    expect(screen.getByText(/40.5°C peak/)).toBeInTheDocument();
+    expect(screen.getByText(/9.0 hrs > 35°C/)).toBeInTheDocument();
+    expect(screen.getByText(/8.2 hrs > 35°C/)).toBeInTheDocument();
   });
 });

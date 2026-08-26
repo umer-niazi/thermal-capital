@@ -38,7 +38,7 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
   const [result, setResult] = useState<BudgetOptimizationResult | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { formatDelta } = useTemperature();
+  const { unit, formatDelta } = useTemperature();
 
   // Close on Escape key
   useEffect(() => {
@@ -235,7 +235,7 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
                     {formatDelta(result.portfolio_avg_peak_reduction_c)}
                   </div>
                   <div className="text-[10px] text-slate-500">
-                    -{result.portfolio_avg_hours_reduction_pct.toFixed(0)}% &gt;35°C hours (modeled)
+                    -{result.portfolio_avg_hours_reduction_pct.toFixed(0)}% &gt;{unit === "F" ? "95°F" : "35°C"} hours (modeled)
                   </div>
                 </div>
 

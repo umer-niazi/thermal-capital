@@ -113,7 +113,7 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
         </div>
 
         <div className="bg-white border border-slate-200 p-2.5 rounded">
-          <span className="text-[11px] text-slate-600 block mb-0.5">Hours Above 35°C</span>
+          <span className="text-[11px] text-slate-600 block mb-0.5">{unit === "F" ? "Hours Above 95°F" : "Hours Above 35°C"}</span>
           <div className="font-mono text-sm font-bold text-slate-900">
             {obs.hours_above_35c.toFixed(1)} h
             <span className="text-[11px] font-normal text-slate-500 ml-1">({obs.persistence_hours.toFixed(1)}h run)</span>
@@ -159,7 +159,7 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
             <>
               <li>High afternoon peak thermal exposure ({formatTemp(obs.peak_temperature_c)})</li>
               <li>Limited overnight cooling recovery ({formatTemp(obs.overnight_min_c)} minimum)</li>
-              <li>Extended heat persistence ({obs.hours_above_35c.toFixed(1)}h exceeding 35°C)</li>
+              <li>Extended heat persistence ({obs.hours_above_35c.toFixed(1)}h exceeding {unit === "F" ? "95°F" : "35°C"})</li>
               <li>High daily pedestrian and transit usage (~{formatNumber(asset.daily_visitors)} citizens)</li>
               <li>Severe vegetative canopy deficit ({obs.canopy_pct.toFixed(0)}% canopy)</li>
             </>

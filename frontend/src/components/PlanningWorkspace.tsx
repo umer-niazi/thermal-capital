@@ -75,7 +75,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
   const [showAssumptions, setShowAssumptions] = useState<boolean>(false);
   const [showBaselineRationale, setShowBaselineRationale] = useState<boolean>(false);
   const [showMethodologyModal, setShowMethodologyModal] = useState<boolean>(false);
-  const { formatTemp, formatDelta } = useTemperature();
+  const { unit, formatTemp, formatDelta } = useTemperature();
 
   const treeCost = DEFAULT_INTERVENTION_COSTS.tree_canopy.planning_unit_cost;
   const shadeCost = DEFAULT_INTERVENTION_COSTS.shade_structure.planning_unit_cost;
@@ -653,7 +653,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
                 Exposure: <strong className={riskCurrent.text}>{asset.heat_risk_level}</strong>
               </div>
               <div className="text-[11px] text-slate-500">
-                {imp.hours_35c_before.toFixed(1)} h &gt; 35°C observed
+                {imp.hours_35c_before.toFixed(1)} h &gt; {unit === "F" ? "95°F" : "35°C"} observed
               </div>
             </div>
 
@@ -785,7 +785,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
                   ) : (
                     <>
                       <li>High afternoon peak thermal exposure ({formatTemp(obs.peak_temperature_c)} baseline)</li>
-                      <li>Elevated heat persistence ({obs.hours_above_35c.toFixed(1)}h exceeding 35°C)</li>
+                      <li>Elevated heat persistence ({obs.hours_above_35c.toFixed(1)}h exceeding {unit === "F" ? "95°F" : "35°C"})</li>
                       <li>High transit/public usage (~{formatNumber(asset.daily_visitors)} citizens/day)</li>
                     </>
                   )}
@@ -856,7 +856,7 @@ export const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
                   <div className="bg-white border border-slate-200 p-2 rounded">
                     <span className="font-bold text-slate-900 block mb-0.5">Observed Baseline</span>
                     <p className="text-slate-600 leading-snug">
-                      Derived directly from <strong>FortyGuard's 100m ambient temperature grid</strong>, cumulative exceedance hours (&gt;35°C), and persistence runs during the July 15–21, 2024 heatwave.
+                      Derived directly from <strong>FortyGuard's 100m ambient temperature grid</strong>, cumulative exceedance hours (&gt;{unit === "F" ? "95°F" : "35°C"}), and persistence runs during the July 15–21, 2024 heatwave.
                     </p>
                   </div>
                   <div className="bg-brand-50/60 border border-brand-200 p-2 rounded">

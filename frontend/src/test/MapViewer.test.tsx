@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { MapViewer } from "../components/MapViewer";
+import { MapViewer, getLayerConfigs } from "../components/MapViewer";
 import { CityConfig, PlacedIntervention, PublicAsset } from "../types";
+import { TemperatureProvider } from "../context/TemperatureContext";
 
 vi.mock("maplibre-gl", () => {
   const MapMock = vi.fn(function () {
@@ -178,5 +179,63 @@ describe("MapViewer Component", () => {
 
     fireEvent.click(screen.getByText("+ Tree"));
     expect(onSelectTool).toHaveBeenCalledWith("tree");
+  });
+
+  it("dynamically configures exceedance and persistence labels based on temperature unit", () => {
+    const fConfigs = getLayerConfigs("F");
+    expect(fConfigs.exceedance.label).toBe("Hours Above 95°F");
+    expect(fConfigs.exceedance.description).toContain("95°F (35°C)");
+    expect(fConfigs.persistence.description).toContain("above 95°F");
+
+    const cConfigs = getLayerConfigs("C");
+    expect(cConfigs.exceedance.label).toBe("Hours Above 35°C");
+    expect(cConfigs.exceedance.description).toContain("35°C (95°F)");
+    expect(cConfigs.persistence.description).toContain("above 35°C");
+  });
+
+  it("renders Fahrenheit layer label in legend and layer button aria-label when F is active", () => {
+    const onSelect = vi.fn();
+    const onChangeLayer = vi.fn();
+
+    render(
+      <TemperatureProvider initialUnit="F">
+        <MapViewer
+          cityConfig={mockCity}
+          assets={mockAssets}
+          selectedAssetId={null}
+          onSelectAsset={onSelect}
+          appMode="explore"
+          activeLayer="exceedance"
+          onChangeLayer={onChangeLayer}
+          heatmapGeoJSON={null}
+        />
+      </TemperatureProvider>
+    );
+
+    expect(screen.getByRole("button", { name: "Show Hours Above 95°F layer" })).toBeInTheDocument();
+    expect(screen.getByText("Hours Above 95°F")).toBeInTheDocument();
+  });
+
+  it("renders Celsius layer label in legend and layer button aria-label when C is active", () => {
+    const onSelect = vi.fn();
+    const onChangeLayer = vi.fn();
+
+    render(
+      <TemperatureProvider initialUnit="C">
+        <MapViewer
+          cityConfig={mockCity}
+          assets={mockAssets}
+          selectedAssetId={null}
+          onSelectAsset={onSelect}
+          appMode="explore"
+          activeLayer="exceedance"
+          onChangeLayer={onChangeLayer}
+          heatmapGeoJSON={null}
+        />
+      </TemperatureProvider>
+    );
+
+    expect(screen.getByRole("button", { name: "Show Hours Above 35°C layer" })).toBeInTheDocument();
+    expect(screen.getByText("Hours Above 35°C")).toBeInTheDocument();
   });
 });

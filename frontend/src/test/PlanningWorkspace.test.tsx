@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { PlanningWorkspace } from "../components/PlanningWorkspace";
 import { CityConfig, PlacedIntervention, PublicAsset } from "../types";
+import { TemperatureProvider } from "../context/TemperatureContext";
 
 vi.mock("../services/api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../services/api")>();
@@ -155,21 +156,23 @@ describe("PlanningWorkspace Component", () => {
     const onSelectTool = vi.fn();
 
     render(
-      <PlanningWorkspace
-        asset={mockAsset}
-        allAssets={[mockAsset]}
-        cityConfig={mockCity}
-        onSelectAsset={onSelect}
-        onOpenOptimizer={onOpenOpt}
-        onOpenReport={onOpenRep}
-        onSwitchMode={onSwitch}
-        placedInterventions={mockInterventions}
-        onAddIntervention={onAdd}
-        onRemoveIntervention={onRemove}
-        onClearAssetInterventions={onClear}
-        activePlacementTool={null}
-        onSelectPlacementTool={onSelectTool}
-      />
+      <TemperatureProvider initialUnit="F">
+        <PlanningWorkspace
+          asset={mockAsset}
+          allAssets={[mockAsset]}
+          cityConfig={mockCity}
+          onSelectAsset={onSelect}
+          onOpenOptimizer={onOpenOpt}
+          onOpenReport={onOpenRep}
+          onSwitchMode={onSwitch}
+          placedInterventions={mockInterventions}
+          onAddIntervention={onAdd}
+          onRemoveIntervention={onRemove}
+          onClearAssetInterventions={onClear}
+          activePlacementTool={null}
+          onSelectPlacementTool={onSelectTool}
+        />
+      </TemperatureProvider>
     );
 
     // Baseline: 41.2°C -> 106.2°F
@@ -178,5 +181,43 @@ describe("PlanningWorkspace Component", () => {
     expect(await screen.findByText("102.2°F")).toBeInTheDocument();
     // Delta: 2.2°C -> 4.0°F
     expect(await screen.findByText("↓ 4.0°F")).toBeInTheDocument();
+    // Exceedance threshold label in °F
+    expect(screen.getByText(/9.0 h > 95°F observed/)).toBeInTheDocument();
+  });
+
+  it("displays exceedance threshold in °C when Celsius is active", async () => {
+    const onSelect = vi.fn();
+    const onOpenOpt = vi.fn();
+    const onOpenRep = vi.fn();
+    const onSwitch = vi.fn();
+    const onAdd = vi.fn();
+    const onRemove = vi.fn();
+    const onClear = vi.fn();
+    const onSelectTool = vi.fn();
+
+    render(
+      <TemperatureProvider initialUnit="C">
+        <PlanningWorkspace
+          asset={mockAsset}
+          allAssets={[mockAsset]}
+          cityConfig={mockCity}
+          onSelectAsset={onSelect}
+          onOpenOptimizer={onOpenOpt}
+          onOpenReport={onOpenRep}
+          onSwitchMode={onSwitch}
+          placedInterventions={mockInterventions}
+          onAddIntervention={onAdd}
+          onRemoveIntervention={onRemove}
+          onClearAssetInterventions={onClear}
+          activePlacementTool={null}
+          onSelectPlacementTool={onSelectTool}
+        />
+      </TemperatureProvider>
+    );
+
+    expect(await screen.findByText("41.2°C")).toBeInTheDocument();
+    expect(await screen.findByText("39.0°C")).toBeInTheDocument();
+    expect(await screen.findByText("↓ 2.2°C")).toBeInTheDocument();
+    expect(screen.getByText(/9.0 h > 35°C observed/)).toBeInTheDocument();
   });
 });
