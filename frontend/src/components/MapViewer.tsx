@@ -1234,20 +1234,27 @@ export const MapViewer: React.FC<MapViewerProps> = ({
     activePlacementTool,
   ]);
 
-  // Fly to selected asset
+  // Fly to selected asset when explicitly selected by the user
+  const prevSelectedAssetIdRef = useRef<string | null>(null);
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !selectedAssetId) return;
+    if (!map || !selectedAssetId) {
+      prevSelectedAssetIdRef.current = selectedAssetId;
+      return;
+    }
 
-    const sel = assets.find((a) => a.asset_id === selectedAssetId);
-    if (!sel) return;
-
-    map.flyTo({
-      center: [sel.longitude, sel.latitude],
-      zoom: 15.5,
-      duration: 800,
-      essential: true,
-    });
+    if (prevSelectedAssetIdRef.current !== selectedAssetId) {
+      const sel = assets.find((a) => a.asset_id === selectedAssetId);
+      if (sel) {
+        map.flyTo({
+          center: [sel.longitude, sel.latitude],
+          zoom: 15.5,
+          duration: 800,
+          essential: true,
+        });
+      }
+    }
+    prevSelectedAssetIdRef.current = selectedAssetId;
   }, [selectedAssetId, assets]);
 
   return (

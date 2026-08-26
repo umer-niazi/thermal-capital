@@ -185,11 +185,7 @@ const AppContent: React.FC = () => {
       .then((assetsRes) => {
         if (!isMounted) return;
         setAssets(assetsRes);
-        if (assetsRes.length > 0) {
-          setSelectedAssetId(assetsRes[0].asset_id);
-        } else {
-          setSelectedAssetId(null);
-        }
+        setSelectedAssetId(null);
         setLoadingInitial(false);
         setLoadingCityData(false);
       })

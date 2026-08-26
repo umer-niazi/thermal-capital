@@ -26,16 +26,29 @@ def test_api_cities() -> None:
 
 
 def test_api_assets_list_nyc() -> None:
-    """Verify /api/assets for NYC returns 27 enriched assets across all boroughs."""
+    """Verify /api/assets for NYC returns enriched assets across all boroughs and supports borough filtering."""
     resp = client.get("/api/assets?city=nyc")
     assert resp.status_code == 200
     assets = resp.json()
-    assert len(assets) == 27
+    assert len(assets) >= 100
     first = assets[0]
     assert first["city"] == "New York City"
     assert "NYC-" in first["asset_id"]
     assert first["observed_heat"]["peak_temperature_c"] > 30.0
     assert first["observed_heat"]["hours_above_35c"] >= 0.0
+
+    # Test borough-specific queries
+    resp_bk = client.get("/api/assets?city=brooklyn")
+    assert resp_bk.status_code == 200
+    bk_assets = resp_bk.json()
+    assert len(bk_assets) >= 20
+    assert all("NYC-BK-" in a["asset_id"] for a in bk_assets)
+
+    resp_qn = client.get("/api/assets?city=queens")
+    assert resp_qn.status_code == 200
+    qn_assets = resp_qn.json()
+    assert len(qn_assets) >= 20
+    assert all("NYC-QN-" in a["asset_id"] for a in qn_assets)
 
 
 def test_api_heatmap_nyc_layers() -> None:
