@@ -150,37 +150,14 @@ export function getLayerConfigs(unit: TemperatureUnit = "F"): Record<HeatmapLaye
   };
 }
 
-export function getBaseMapStyle(apiKey?: string): maplibregl.StyleSpecification {
+export function getBaseMapStyle(apiKey?: string): string {
   const envKey = (import.meta as any).env?.VITE_CARTO_API_KEY as string | undefined;
   const key = apiKey ?? envKey ?? "";
   const query = key.trim() ? `?key=${encodeURIComponent(key.trim())}` : "";
-  return {
-    version: 8,
-    glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
-    sources: {
-      "carto-positron": {
-        type: "raster",
-        tiles: [
-          `https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png${query}`,
-          `https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png${query}`,
-        ],
-        tileSize: 256,
-        attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
-      },
-    },
-    layers: [
-      {
-        id: "carto-positron-layer",
-        type: "raster",
-        source: "carto-positron",
-        minzoom: 0,
-        maxzoom: 19,
-      },
-    ],
-  };
+  return `https://basemaps.cartocdn.com/gl/positron-gl-style/style.json${query}`;
 }
 
-export const BASE_MAP_STYLE: maplibregl.StyleSpecification = getBaseMapStyle();
+export const BASE_MAP_STYLE: string = getBaseMapStyle();
 
 export const MAP_LAYER_ORDER = [
   "heatmap-tiles-fill",

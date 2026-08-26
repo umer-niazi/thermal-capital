@@ -304,22 +304,15 @@ describe("MapViewer Component", () => {
   });
 
   describe("CARTO Basemap Style and API Key Configuration", () => {
-    it("returns clean raster tile URLs without query parameter when no API key is set", () => {
-      const style = getBaseMapStyle("");
-      const source = style.sources["carto-positron"] as any;
-      expect(source.type).toBe("raster");
-      expect(source.tiles[0]).toBe("https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png");
-      expect(source.tiles[1]).toBe("https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png");
-      expect(source.attribution).toContain("CARTO");
-      expect(source.attribution).toContain("OpenStreetMap");
+    it("returns clean CARTO Positron vector style URL without query parameter when no API key is set", () => {
+      const styleUrl = getBaseMapStyle("");
+      expect(styleUrl).toBe("https://basemaps.cartocdn.com/gl/positron-gl-style/style.json");
     });
 
     it("appends ?key= query parameter when CARTO API key is provided", () => {
       const testKey = "carto_test_key_12345";
-      const style = getBaseMapStyle(testKey);
-      const source = style.sources["carto-positron"] as any;
-      expect(source.tiles[0]).toBe(`https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?key=${testKey}`);
-      expect(source.tiles[1]).toBe(`https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?key=${testKey}`);
+      const styleUrl = getBaseMapStyle(testKey);
+      expect(styleUrl).toBe(`https://basemaps.cartocdn.com/gl/positron-gl-style/style.json?key=${testKey}`);
     });
   });
 
