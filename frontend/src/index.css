@@ -44,6 +44,11 @@ body {
   scrollbar-width: none;
 }
 
+/* Ensure no stray compact attribution artifact */
+.maplibregl-ctrl-attrib.maplibregl-compact {
+  display: none !important;
+}
+
 /* MapLibre Light Clean Popup Overrides */
 .maplibregl-popup-content {
   background: #ffffff !important;

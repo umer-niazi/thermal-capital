@@ -66,8 +66,7 @@ export const RankingList: React.FC<RankingListProps> = ({
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <h3
-                      title={asset.name}
-                      className="text-xs font-semibold text-slate-900 truncate group-hover:text-primary-600 transition-colors"
+                      className="text-xs font-semibold text-slate-900 leading-snug line-clamp-2 group-hover:text-primary-600 transition-colors"
                     >
                       {asset.name}
                     </h3>

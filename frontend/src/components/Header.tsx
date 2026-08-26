@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
             aria-label="Select city location"
             value={currentCity.city_key}
             onChange={(e) => onSelectCity(e.target.value)}
-            className="bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded px-1.5 sm:px-2.5 py-1 text-xs text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 cursor-pointer transition-colors max-w-[105px] xs:max-w-[130px] sm:max-w-[180px] truncate"
+            className="bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded px-1.5 sm:px-2.5 py-1 text-xs text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 cursor-pointer transition-colors max-w-[125px] xs:max-w-[155px] sm:max-w-[200px] md:max-w-[240px] truncate"
           >
             {allCities.map((c) => (
               <option key={c.city_key} value={c.city_key}>
@@ -84,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={() => onSwitchMode("explore")}
           aria-label="1. Identify Risk"
           aria-current={appMode === "explore" ? "step" : undefined}
-          className={`w-[98px] sm:w-[142px] h-[32px] sm:h-[30px] flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 text-xs rounded transition-colors font-semibold focus:outline-none focus:ring-2 focus:ring-slate-400 flex-shrink-0 ${
+          className={`w-[98px] sm:w-[142px] h-[30px] whitespace-nowrap flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 text-xs rounded transition-colors font-semibold focus:outline-none focus:ring-2 focus:ring-slate-400 flex-shrink-0 ${
             appMode === "explore"
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
@@ -103,14 +103,14 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={() => onSwitchMode("plan")}
           aria-label="2. Intervene & Compare"
           aria-current={appMode === "plan" ? "step" : undefined}
-          className={`w-[106px] sm:w-[174px] h-[32px] sm:h-[30px] flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 text-xs rounded transition-colors font-semibold focus:outline-none focus:ring-2 focus:ring-slate-400 flex-shrink-0 ${
+          className={`w-[106px] sm:w-[188px] h-[30px] whitespace-nowrap flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 text-xs rounded transition-colors font-semibold focus:outline-none focus:ring-2 focus:ring-slate-400 flex-shrink-0 ${
             appMode === "plan"
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
           }`}
         >
           <Layers className="w-3.5 h-3.5 flex-shrink-0" />
-          <span className="hidden sm:inline">2. Intervene &amp; Compare</span>
+          <span className="hidden sm:inline whitespace-nowrap">2. Intervene &amp; Compare</span>
           <span className="sm:hidden">2. Intervene</span>
         </button>
       </nav>

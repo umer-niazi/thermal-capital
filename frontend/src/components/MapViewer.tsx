@@ -1012,7 +1012,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         clusterRadius: 30,
       });
 
-      // Cluster Circle Layer (Softened visual weight to keep FortyGuard heatmap dominant)
+      // Cluster Circle Layer (Softened visual weight, 65% opacity, reduced radius)
       addLayerInOrder(map, {
         id: "assets-clusters-circle",
         type: "circle",
@@ -1023,19 +1023,20 @@ export const MapViewer: React.FC<MapViewerProps> = ({
           "circle-radius": [
             "step",
             ["get", "point_count"],
-            10,
+            9,
             5,
+            11,
             12,
-            12,
-            15,
+            13,
           ],
           "circle-stroke-width": 1.5,
           "circle-stroke-color": "#ffffff",
-          "circle-opacity": 0.85,
+          "circle-stroke-opacity": 0.85,
+          "circle-opacity": 0.65,
         },
       });
 
-      // Cluster Count Symbol Layer (Crisp, centered two-digit counts)
+      // Cluster Count Symbol Layer (Crisp legible counts)
       addLayerInOrder(map, {
         id: "assets-clusters-count",
         type: "symbol",
@@ -1044,7 +1045,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         layout: {
           "text-field": ["get", "point_count_abbreviated"],
           "text-font": ["Open Sans Regular", "Arial Unicode MS Regular"],
-          "text-size": 10,
+          "text-size": 9.5,
           "text-allow-overlap": true,
           "text-ignore-placement": true,
         },
@@ -1578,7 +1579,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
               </div>
             </div>
             <div className="flex items-center gap-1.5 text-[10px] text-slate-600 pt-0.5">
-              <span className="w-3.5 h-3.5 rounded-full bg-slate-700 text-white font-bold text-[8.5px] flex items-center justify-center border border-white flex-shrink-0">
+              <span className="w-3.5 h-3.5 rounded-full bg-slate-700/70 text-white font-bold text-[8.5px] flex items-center justify-center border border-white flex-shrink-0">
                 #
               </span>
               <span>Cluster · Multiple sites (click to zoom)</span>

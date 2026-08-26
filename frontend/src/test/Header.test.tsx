@@ -159,7 +159,7 @@ describe("Header Component", () => {
     expect(step1Btn.className).toContain("font-semibold");
 
     expect(step2Btn.className).toContain("w-[106px]");
-    expect(step2Btn.className).toContain("sm:w-[174px]");
+    expect(step2Btn.className).toContain("sm:w-[188px]");
     expect(step2Btn.className).toContain("font-semibold");
 
     // Temperature toggle buttons have fixed equal widths and consistent font weights
