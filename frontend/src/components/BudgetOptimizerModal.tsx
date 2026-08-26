@@ -282,7 +282,7 @@ export const BudgetOptimizerModal: React.FC<BudgetOptimizerModalProps> = ({
 
                         return (
                           <tr key={alloc.asset_id} className="hover:bg-slate-50">
-                            <td className="p-2.5 font-medium text-slate-900">
+                            <td className="p-2.5 font-medium text-slate-900 truncate max-w-[220px]" title={alloc.asset_name}>
                               {alloc.asset_name}
                             </td>
                             <td className="p-2.5 text-slate-600">{getAssetTypeLabel(alloc.asset_type)}</td>

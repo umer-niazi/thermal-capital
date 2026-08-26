@@ -415,6 +415,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
       zoom: cityConfig.zoom,
       maxZoom: 18,
       minZoom: 4,
+      attributionControl: false,
     });
 
     map.addControl(new NavigationControl({ showCompass: true }), "top-right");
@@ -1011,30 +1012,30 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         clusterRadius: 30,
       });
 
-      // Cluster Circle Layer
+      // Cluster Circle Layer (Softened visual weight to keep FortyGuard heatmap dominant)
       addLayerInOrder(map, {
         id: "assets-clusters-circle",
         type: "circle",
         source: "assets-source",
         filter: ["has", "point_count"],
         paint: {
-          "circle-color": "#1e293b",
+          "circle-color": "#334155",
           "circle-radius": [
             "step",
             ["get", "point_count"],
-            14,
+            10,
             5,
-            17,
             12,
-            21,
+            12,
+            15,
           ],
-          "circle-stroke-width": 2.5,
+          "circle-stroke-width": 1.5,
           "circle-stroke-color": "#ffffff",
-          "circle-opacity": 0.95,
+          "circle-opacity": 0.85,
         },
       });
 
-      // Cluster Count Symbol Layer
+      // Cluster Count Symbol Layer (Crisp, centered two-digit counts)
       addLayerInOrder(map, {
         id: "assets-clusters-count",
         type: "symbol",
@@ -1043,7 +1044,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         layout: {
           "text-field": ["get", "point_count_abbreviated"],
           "text-font": ["Open Sans Regular", "Arial Unicode MS Regular"],
-          "text-size": 11,
+          "text-size": 10,
           "text-allow-overlap": true,
           "text-ignore-placement": true,
         },
@@ -1577,7 +1578,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
               </div>
             </div>
             <div className="flex items-center gap-1.5 text-[10px] text-slate-600 pt-0.5">
-              <span className="w-4 h-4 rounded-full bg-slate-800 text-white font-bold text-[9px] flex items-center justify-center border border-white flex-shrink-0">
+              <span className="w-3.5 h-3.5 rounded-full bg-slate-700 text-white font-bold text-[8.5px] flex items-center justify-center border border-white flex-shrink-0">
                 #
               </span>
               <span>Cluster · Multiple sites (click to zoom)</span>
@@ -1603,6 +1604,12 @@ export const MapViewer: React.FC<MapViewerProps> = ({
                 <span>Cool Pavement</span>
               </span>
             </div>
+          </div>
+
+          {/* 4. Map & Data Attribution */}
+          <div className="border-t border-slate-200 pt-1 text-[9px] text-slate-400 flex items-center justify-between">
+            <span>&copy; CARTO &copy; OpenStreetMap</span>
+            <span className="font-mono">FortyGuard 100m</span>
           </div>
         </div>
       </div>

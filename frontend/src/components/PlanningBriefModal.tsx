@@ -311,7 +311,7 @@ ${report.methodology_and_assumptions.map((m) => `- ${m}`).join("\n")}
                         return (
                           <tr key={idx} className="avoid-break">
                             <td className="p-2.5 font-medium text-slate-900">
-                              <div>{row.asset_name}</div>
+                              <div className="truncate max-w-[220px]" title={row.asset_name}>{row.asset_name}</div>
                               <span className="text-[10px] text-slate-500 font-mono">
                                 {row.asset_id} • {row.asset_type}
                               </span>
