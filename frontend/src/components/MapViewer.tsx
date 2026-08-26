@@ -150,30 +150,84 @@ export function getLayerConfigs(unit: TemperatureUnit = "F"): Record<HeatmapLaye
   };
 }
 
-const BASE_MAP_STYLE: maplibregl.StyleSpecification = {
-  version: 8,
-  glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
-  sources: {
-    "carto-positron": {
-      type: "raster",
-      tiles: [
-        "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
-        "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
-      ],
-      tileSize: 256,
-      attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
+export function getBaseMapStyle(apiKey?: string): maplibregl.StyleSpecification {
+  const envKey = (import.meta as any).env?.VITE_CARTO_API_KEY as string | undefined;
+  const key = apiKey ?? envKey ?? "";
+  const query = key.trim() ? `?api_key=${encodeURIComponent(key.trim())}` : "";
+  return {
+    version: 8,
+    glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+    sources: {
+      "carto-positron": {
+        type: "raster",
+        tiles: [
+          `https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png${query}`,
+          `https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png${query}`,
+        ],
+        tileSize: 256,
+        attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
+      },
     },
-  },
-  layers: [
-    {
-      id: "carto-positron-layer",
-      type: "raster",
-      source: "carto-positron",
-      minzoom: 0,
-      maxzoom: 19,
-    },
-  ],
-};
+    layers: [
+      {
+        id: "carto-positron-layer",
+        type: "raster",
+        source: "carto-positron",
+        minzoom: 0,
+        maxzoom: 19,
+      },
+    ],
+  };
+}
+
+export const BASE_MAP_STYLE: maplibregl.StyleSpecification = getBaseMapStyle();
+
+export const MAP_LAYER_ORDER = [
+  "heatmap-tiles-fill",
+  "heatmap-tiles-line",
+  "interventions-reflective-fill",
+  "interventions-reflective-line",
+  "interventions-trees-radius-fill",
+  "interventions-trees-radius-line",
+  "interventions-trees-circle",
+  "interventions-shade-circle",
+  "assets-clusters-circle",
+  "assets-clusters-count",
+  "assets-selection-halo",
+  "assets-risk-circle",
+  "assets-inner-dot",
+  "assets-symbol-label",
+] as const;
+
+export function addLayerInOrder(
+  map: maplibregl.Map,
+  layerDef: any
+): void {
+  if (map.getLayer(layerDef.id)) return;
+  const targetIdx = MAP_LAYER_ORDER.indexOf(layerDef.id as any);
+  let beforeId: string | undefined = undefined;
+  if (targetIdx !== -1) {
+    for (let i = targetIdx + 1; i < MAP_LAYER_ORDER.length; i++) {
+      const candidateId = MAP_LAYER_ORDER[i];
+      if (map.getLayer(candidateId)) {
+        beforeId = candidateId;
+        break;
+      }
+    }
+  }
+  map.addLayer(layerDef, beforeId);
+}
+
+export function enforceMapLayerOrder(map: maplibregl.Map): void {
+  const activeCustomLayers = MAP_LAYER_ORDER.filter((id) => !!map.getLayer(id));
+  for (const layerId of activeCustomLayers) {
+    try {
+      map.moveLayer(layerId);
+    } catch {
+      // ignore during style updates
+    }
+  }
+}
 
 export const MapViewer: React.FC<MapViewerProps> = ({
   cityConfig,
@@ -598,7 +652,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         });
 
         // Heatmap fill with zoom-interpolated opacity for clarity at city-wide vs parcel zoom
-        map.addLayer({
+        addLayerInOrder(map, {
           id: "heatmap-tiles-fill",
           type: "fill",
           source: "heatmap-source",
@@ -616,7 +670,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         });
 
         // Grid lines with zoom-dependent opacity to prevent white haze at low zoom
-        map.addLayer({
+        addLayerInOrder(map, {
           id: "heatmap-tiles-line",
           type: "line",
           source: "heatmap-source",
@@ -725,7 +779,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         data: reflectiveGeoJSON,
       });
 
-      map.addLayer({
+      addLayerInOrder(map, {
         id: "interventions-reflective-fill",
         type: "fill",
         source: "reflective-interventions-source",
@@ -735,7 +789,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         },
       });
 
-      map.addLayer({
+      addLayerInOrder(map, {
         id: "interventions-reflective-line",
         type: "line",
         source: "reflective-interventions-source",
@@ -796,7 +850,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         data: treesRadiusGeoJSON,
       });
 
-      map.addLayer({
+      addLayerInOrder(map, {
         id: "interventions-trees-radius-fill",
         type: "fill",
         source: "trees-radius-source",
@@ -806,7 +860,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         },
       });
 
-      map.addLayer({
+      addLayerInOrder(map, {
         id: "interventions-trees-radius-line",
         type: "line",
         source: "trees-radius-source",
@@ -828,7 +882,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         data: treesGeoJSON,
       });
 
-      map.addLayer({
+      addLayerInOrder(map, {
         id: "interventions-trees-circle",
         type: "circle",
         source: "trees-interventions-source",
@@ -891,7 +945,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         data: shadeGeoJSON,
       });
 
-      map.addLayer({
+      addLayerInOrder(map, {
         id: "interventions-shade-circle",
         type: "circle",
         source: "shade-interventions-source",
@@ -958,7 +1012,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
       });
 
       // Cluster Circle Layer
-      map.addLayer({
+      addLayerInOrder(map, {
         id: "assets-clusters-circle",
         type: "circle",
         source: "assets-source",
@@ -981,7 +1035,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
       });
 
       // Cluster Count Symbol Layer
-      map.addLayer({
+      addLayerInOrder(map, {
         id: "assets-clusters-count",
         type: "symbol",
         source: "assets-source",
@@ -1037,7 +1091,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
       map.on("mouseleave", "assets-clusters-count", resetClusterPointer);
 
       // Unclustered Asset Outer Selection Focus Ring
-      map.addLayer({
+      addLayerInOrder(map, {
         id: "assets-selection-halo",
         type: "circle",
         source: "assets-source",
@@ -1056,7 +1110,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
       });
 
       // Unclustered Asset Risk Circle
-      map.addLayer({
+      addLayerInOrder(map, {
         id: "assets-risk-circle",
         type: "circle",
         source: "assets-source",
@@ -1076,7 +1130,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
       });
 
       // Unclustered Asset Inner Center Dot
-      map.addLayer({
+      addLayerInOrder(map, {
         id: "assets-inner-dot",
         type: "circle",
         source: "assets-source",
@@ -1093,7 +1147,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
       });
 
       // Asset text label (with crisp halo for high contrast over red/orange tiles)
-      map.addLayer({
+      addLayerInOrder(map, {
         id: "assets-symbol-label",
         type: "symbol",
         source: "assets-source",
@@ -1162,6 +1216,9 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         7,
       ]);
     }
+
+    // Enforce deterministic layer order (heatmap below interventions and asset markers)
+    enforceMapLayerOrder(map);
   }, [
     renderedHeatmapGeoJSON,
     assetsGeoJSON,

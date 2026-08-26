@@ -1,6 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { MapViewer, getLayerConfigs } from "../components/MapViewer";
+import {
+  MapViewer,
+  getLayerConfigs,
+  MAP_LAYER_ORDER,
+  addLayerInOrder,
+  enforceMapLayerOrder,
+  getBaseMapStyle,
+} from "../components/MapViewer";
 import { CityConfig, PlacedIntervention, PublicAsset } from "../types";
 import { TemperatureProvider } from "../context/TemperatureContext";
 
@@ -18,6 +25,7 @@ vi.mock("maplibre-gl", () => {
       getSource: vi.fn(),
       addSource: vi.fn(),
       addLayer: vi.fn(),
+      moveLayer: vi.fn(),
       getLayer: vi.fn(),
       setPaintProperty: vi.fn(),
       getCanvas: vi.fn(() => ({ style: {} })),
@@ -237,5 +245,78 @@ describe("MapViewer Component", () => {
 
     expect(screen.getByRole("button", { name: "Show Hours Above 35°C layer" })).toBeInTheDocument();
     expect(screen.getByText("Hours Above 35°C")).toBeInTheDocument();
+  });
+
+  describe("Deterministic Layer Ordering", () => {
+    it("defines canonical order with heatmap below interventions and asset markers/labels", () => {
+      const heatmapFillIdx = MAP_LAYER_ORDER.indexOf("heatmap-tiles-fill");
+      const heatmapLineIdx = MAP_LAYER_ORDER.indexOf("heatmap-tiles-line");
+      const reflectiveIdx = MAP_LAYER_ORDER.indexOf("interventions-reflective-fill");
+      const treeCircleIdx = MAP_LAYER_ORDER.indexOf("interventions-trees-circle");
+      const assetClusterIdx = MAP_LAYER_ORDER.indexOf("assets-clusters-circle");
+      const assetCircleIdx = MAP_LAYER_ORDER.indexOf("assets-risk-circle");
+      const assetLabelIdx = MAP_LAYER_ORDER.indexOf("assets-symbol-label");
+
+      expect(heatmapFillIdx).toBeLessThan(heatmapLineIdx);
+      expect(heatmapLineIdx).toBeLessThan(reflectiveIdx);
+      expect(reflectiveIdx).toBeLessThan(treeCircleIdx);
+      expect(treeCircleIdx).toBeLessThan(assetClusterIdx);
+      expect(assetClusterIdx).toBeLessThan(assetCircleIdx);
+      expect(assetCircleIdx).toBeLessThan(assetLabelIdx);
+    });
+
+    it("inserts heatmap below existing asset layers when added asynchronously", () => {
+      const mockMap = {
+        getLayer: vi.fn((id: string) => {
+          if (id === "assets-clusters-circle" || id === "assets-risk-circle" || id === "assets-symbol-label") {
+            return { id };
+          }
+          return undefined;
+        }),
+        addLayer: vi.fn(),
+      } as any;
+
+      addLayerInOrder(mockMap, { id: "heatmap-tiles-fill", type: "fill" });
+      expect(mockMap.addLayer).toHaveBeenCalledWith(
+        { id: "heatmap-tiles-fill", type: "fill" },
+        "assets-clusters-circle"
+      );
+    });
+
+    it("enforces order by calling moveLayer sequentially for all active custom layers", () => {
+      const mockMap = {
+        getLayer: vi.fn((id: string) => {
+          if (id === "heatmap-tiles-fill" || id === "assets-risk-circle") {
+            return { id };
+          }
+          return undefined;
+        }),
+        moveLayer: vi.fn(),
+      } as any;
+
+      enforceMapLayerOrder(mockMap);
+      expect(mockMap.moveLayer).toHaveBeenCalledWith("heatmap-tiles-fill");
+      expect(mockMap.moveLayer).toHaveBeenCalledWith("assets-risk-circle");
+    });
+  });
+
+  describe("CARTO Basemap Style and API Key Configuration", () => {
+    it("returns clean raster tile URLs without query parameter when no API key is set", () => {
+      const style = getBaseMapStyle("");
+      const source = style.sources["carto-positron"] as any;
+      expect(source.type).toBe("raster");
+      expect(source.tiles[0]).toBe("https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png");
+      expect(source.tiles[1]).toBe("https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png");
+      expect(source.attribution).toContain("CARTO");
+      expect(source.attribution).toContain("OpenStreetMap");
+    });
+
+    it("appends ?api_key= query parameter when CARTO API key is provided", () => {
+      const testKey = "carto_test_key_12345";
+      const style = getBaseMapStyle(testKey);
+      const source = style.sources["carto-positron"] as any;
+      expect(source.tiles[0]).toBe(`https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?api_key=${testKey}`);
+      expect(source.tiles[1]).toBe(`https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?api_key=${testKey}`);
+    });
   });
 });
