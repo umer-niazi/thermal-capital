@@ -60,7 +60,7 @@ export const RankingList: React.FC<RankingListProps> = ({
               className="p-3 hover:bg-slate-50 focus:bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-400 transition-colors cursor-pointer flex items-center justify-between gap-3 group"
             >
               <div className="flex items-start gap-2.5 min-w-0">
-                <span className="text-xs font-semibold text-slate-500 font-mono w-4 pt-0.5">
+                <span className="text-xs font-semibold text-slate-500 font-mono w-7 flex-shrink-0 text-right tabular-nums pt-0.5">
                   {index + 1}.
                 </span>
                 <div className="min-w-0">
