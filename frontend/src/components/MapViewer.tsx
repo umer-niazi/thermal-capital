@@ -153,7 +153,7 @@ export function getLayerConfigs(unit: TemperatureUnit = "F"): Record<HeatmapLaye
 export function getBaseMapStyle(apiKey?: string): maplibregl.StyleSpecification {
   const envKey = (import.meta as any).env?.VITE_CARTO_API_KEY as string | undefined;
   const key = apiKey ?? envKey ?? "";
-  const query = key.trim() ? `?api_key=${encodeURIComponent(key.trim())}` : "";
+  const query = key.trim() ? `?key=${encodeURIComponent(key.trim())}` : "";
   return {
     version: 8,
     glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",

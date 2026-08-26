@@ -311,12 +311,12 @@ describe("MapViewer Component", () => {
       expect(source.attribution).toContain("OpenStreetMap");
     });
 
-    it("appends ?api_key= query parameter when CARTO API key is provided", () => {
+    it("appends ?key= query parameter when CARTO API key is provided", () => {
       const testKey = "carto_test_key_12345";
       const style = getBaseMapStyle(testKey);
       const source = style.sources["carto-positron"] as any;
-      expect(source.tiles[0]).toBe(`https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?api_key=${testKey}`);
-      expect(source.tiles[1]).toBe(`https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?api_key=${testKey}`);
+      expect(source.tiles[0]).toBe(`https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?key=${testKey}`);
+      expect(source.tiles[1]).toBe(`https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?key=${testKey}`);
     });
   });
 });
