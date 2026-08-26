@@ -424,6 +424,16 @@ export const MapViewer: React.FC<MapViewerProps> = ({
       mapRef.current = map;
       setMapLoaded(true);
       map.fitBounds(cityConfig.bounds, { padding: 40, duration: 800 });
+
+      map.on("click", (e) => {
+        const rendered = map.queryRenderedFeatures(e.point);
+        console.log("[Global Map Click]", {
+          point: e.point,
+          lngLat: e.lngLat,
+          renderedLayers: rendered.map(f => f.layer.id),
+          firstFeature: rendered[0] ? { layer: rendered[0].layer.id, props: rendered[0].properties } : null,
+        });
+      });
     });
 
     return () => {
@@ -1056,23 +1066,92 @@ export const MapViewer: React.FC<MapViewerProps> = ({
 
       // Expand cluster on click (bound to both circle and count label)
       const handleClusterClick = (e: maplibregl.MapMouseEvent) => {
-        if (activePlacementTool) return;
-        const features = map.queryRenderedFeatures(e.point, {
-          layers: ["assets-clusters-circle", "assets-clusters-count"],
+        console.log("[Cluster Click Handler]", {
+          point: e.point,
+          lngLat: e.lngLat,
+          eFeatures: (e as any).features,
+          allAtPoint: map.queryRenderedFeatures(e.point).map(f => f.layer.id),
         });
-        if (!features || !features[0]) return;
 
-        const clusterId = features[0]?.properties?.cluster_id;
-        const source = map.getSource("assets-source") as any;
-        if (source && clusterId !== undefined && source.getClusterExpansionZoom) {
-          source.getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
-            if (err) return;
-            const coords = (features[0].geometry as any).coordinates;
-            map.easeTo({
-              center: coords,
-              zoom: Math.max(zoom, map.getZoom() + 2),
-              duration: 500,
+        if (activePlacementTool) return;
+
+        // Deduplicate click event if triggered by both overlapping circle and symbol layers
+        if (e.originalEvent) {
+          if ((e.originalEvent as any).__clusterHandled) {
+            console.log("[Cluster Click] Already handled by overlapping layer, skipping duplicate");
+            return;
+          }
+          (e.originalEvent as any).__clusterHandled = true;
+        }
+
+        const bbox: [maplibregl.PointLike, maplibregl.PointLike] = [
+          [e.point.x - 12, e.point.y - 12],
+          [e.point.x + 12, e.point.y + 12],
+        ];
+        const features = ((e as any).features && (e as any).features.length > 0)
+          ? (e as any).features
+          : map.queryRenderedFeatures(bbox, {
+              layers: ["assets-clusters-circle", "assets-clusters-count"],
             });
+
+        console.log("[Cluster Click] Matched features:", features);
+
+        if (!features || !features[0]) {
+          console.warn("[Cluster Click] No cluster feature found at point!");
+          return;
+        }
+        const feature = features[0];
+
+        const coords = (feature.geometry as GeoJSON.Point)?.coordinates as [number, number] | undefined;
+        if (!coords || coords.length < 2) {
+          console.warn("[Cluster Click] No coordinates on feature:", feature);
+          return;
+        }
+
+        const clusterId = Number(feature.properties?.cluster_id ?? feature.id);
+        const source = map.getSource("assets-source") as any;
+        console.log("[Cluster Click] Feature info:", { clusterId, coords, properties: feature.properties, hasSource: !!source });
+
+        if (source && !isNaN(clusterId) && typeof source.getClusterExpansionZoom === "function") {
+          let hasZoomed = false;
+          const fallbackTimeout = setTimeout(() => {
+            if (!hasZoomed) {
+              hasZoomed = true;
+              console.log("[Cluster Click] Expansion zoom timed out, flying with +2 zoom fallback");
+              map.flyTo({
+                center: coords,
+                zoom: Math.min(map.getZoom() + 2, 16.5),
+                duration: 600,
+                essential: true,
+              });
+            }
+          }, 120);
+
+          source.getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
+            if (hasZoomed) return;
+            hasZoomed = true;
+            clearTimeout(fallbackTimeout);
+            console.log("[Cluster Click] getClusterExpansionZoom callback:", { err, zoom, currentZoom: map.getZoom() });
+            const currentZoom = map.getZoom();
+            const targetZoom = (!err && typeof zoom === "number" && !isNaN(zoom))
+              ? Math.max(zoom, currentZoom + 1.5)
+              : currentZoom + 2;
+
+            console.log("[Cluster Click] Executing flyTo with targetZoom:", targetZoom, "coords:", coords);
+            map.flyTo({
+              center: coords,
+              zoom: Math.min(targetZoom, 16.5),
+              duration: 600,
+              essential: true,
+            });
+          });
+        } else {
+          console.log("[Cluster Click] Fallback flyTo (no cluster expansion zoom method)");
+          map.flyTo({
+            center: coords,
+            zoom: Math.min(map.getZoom() + 2, 16.5),
+            duration: 600,
+            essential: true,
           });
         }
       };
@@ -1175,9 +1254,22 @@ export const MapViewer: React.FC<MapViewerProps> = ({
       // Click on unclustered asset (bound to circles, halo, and label)
       const handleAssetClick = (e: maplibregl.MapMouseEvent) => {
         if (activePlacementTool) return;
-        const features = map.queryRenderedFeatures(e.point, {
-          layers: ["assets-risk-circle", "assets-inner-dot", "assets-selection-halo", "assets-symbol-label"],
-        });
+
+        if (e.originalEvent) {
+          if ((e.originalEvent as any).__assetHandled) return;
+          (e.originalEvent as any).__assetHandled = true;
+        }
+
+        const bbox: [maplibregl.PointLike, maplibregl.PointLike] = [
+          [e.point.x - 8, e.point.y - 8],
+          [e.point.x + 8, e.point.y + 8],
+        ];
+        const features = ((e as any).features && (e as any).features.length > 0)
+          ? (e as any).features
+          : map.queryRenderedFeatures(bbox, {
+              layers: ["assets-risk-circle", "assets-inner-dot", "assets-selection-halo", "assets-symbol-label"],
+            });
+
         if (!features || !features[0]) return;
         const aId = features[0].properties?.asset_id;
         if (aId) onSelectAsset(aId);
