@@ -33,7 +33,7 @@ Thermal Capital bridges the gap between raw microclimate observations and action
 - **Interactive Intervention Placement:** Test street trees, engineered shade structures, and reflective cool pavement directly on the map around target assets.
 - **Before vs. Proposed Scenario Comparison:** Live side-by-side comparison of baseline thermal metrics vs. modeled outcomes (ambient temperature reduction, extreme heat duration reduction, canopy expansion).
 - **Itemized Municipal Cost Modeling:** Transparent capital cost accounting based on turnkey municipal procurement benchmarks (NYC Parks street tree contracts, FTA transit shelter guidelines, EPA cool pavement studies).
-- **Constrained Budget Optimization:** Deterministic knapsack portfolio optimizer allocating a municipal budget (e.g. $500,000) across city assets under 4 distinct objective strategies:
+- **Constrained Budget Optimization:** Deterministic knapsack portfolio optimizer allocating a municipal budget (e.g. \$500,000) across city assets under 4 distinct objective strategies:
   - *Balanced:* Equitable distribution across municipal asset types.
   - *Vulnerable Populations:* Prioritizes elementary schools, daycares, and playgrounds.
   - *Transit Corridors:* Prioritizes high-ridership bus stops and transfer stations.
@@ -68,7 +68,7 @@ The core workflow follows five practical planning steps:
 1. **Identify Risk:** Planners view city-wide 100m grid heat distributions and explore the prioritized list of exposed public infrastructure.
 2. **Inspect a Priority Location:** Selecting an asset zooms to its parcel footprint, displaying measured afternoon peak, exceedance hours, land cover composition, and specific priority reasons.
 3. **Intervene & Compare:** Planners place cooling interventions (trees, shade canopies, cool pavement) on the map and immediately see modeled temperature reductions ($\Delta T$) and extreme heat duration reductions.
-4. **Optimize the Available Budget:** Planners set an overall capital budget (e.g. $500,000) and select an objective strategy to automatically allocate funds across dozens of public assets.
+4. **Optimize the Available Budget:** Planners set an overall capital budget (e.g. \$500,000) and select an objective strategy to automatically allocate funds across dozens of public assets.
 5. **Generate a Planning Brief:** Planners export a print-ready briefing document complete with executive narrative, itemized budget breakdowns, and methodology documentation.
 
 ---
@@ -87,9 +87,9 @@ Thermal Capital maintains strict scientific credibility by separating **observed
 
 ### 2. Modeled Intervention Impacts (Planning Estimates)
 Post-intervention cooling outputs are empirical planning estimates designed for scenario comparison and budget optimization:
-- **Urban Street Tree Canopy:** $25\,\text{m}^2$ mature crown per tree. Modeled via evapotranspiration and solar radiation interception: $\Delta T = 3.2 \cdot (1 - e^{-0.065 \cdot n}) \cdot \text{scale\_factor}$. Planning unit cost: **$3,200/tree** (NYC Parks FY2024 turnkey contracts).
-- **Engineered Shade Structures:** $100\,\text{m}^2$ direct shade per structure. Modeled via direct shortwave solar blockage: $\Delta T = 2.8 \cdot (1 - e^{-0.45 \cdot n})$. Planning unit cost: **$28,000/structure** (FTA & municipal transit capital guidelines).
-- **Reflective Cool Pavement Coating:** Solar-reflective high-albedo coating ($\ge 0.35$ albedo). Modeled via reduced surface sensible heat flux: $\Delta T = 1.8 \cdot (1 - e^{-0.0028 \cdot A_{\text{m2}}})$. Planning unit cost: **$24/\text{m}^2** (EPA Heat Island Reduction Program benchmarks).
+- **Urban Street Tree Canopy:** $25\,\text{m}^2$ mature crown per tree. Modeled via evapotranspiration and solar radiation interception: $\Delta T = 3.2 \cdot (1 - e^{-0.065 \cdot n}) \cdot \text{scale\_factor}$. Planning unit cost: **\$3,200/tree** (NYC Parks FY2024 turnkey contracts).
+- **Engineered Shade Structures:** $100\,\text{m}^2$ direct shade per structure. Modeled via direct shortwave solar blockage: $\Delta T = 2.8 \cdot (1 - e^{-0.45 \cdot n})$. Planning unit cost: **\$28,000/structure** (FTA & municipal transit capital guidelines).
+- **Reflective Cool Pavement Coating:** Solar-reflective high-albedo coating ($\ge 0.35$ albedo). Modeled via reduced surface sensible heat flux: $\Delta T = 1.8 \cdot (1 - e^{-0.0028 \cdot A_{\text{m2}}})$. Planning unit cost: **\$24/$\text{m}^2$** (EPA Heat Island Reduction Program benchmarks).
 - **Synergy & Diminishing Returns:** Multi-intervention packages operate on the same local air volume, subject to an empirical asymptotic ceiling: $\text{Net } \Delta T = \min(4.2, 4.2 \cdot (1 - e^{-\text{raw\_delta}/3.6}))$.
 
 > [!NOTE]
