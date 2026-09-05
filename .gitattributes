@@ -1,0 +1,2 @@
+# Treat Jupyter Notebook files as documentation to exclude them from GitHub language statistics
+*.ipynb linguist-documentation
