@@ -1,0 +1,11 @@
+{
+  "api_key": null,
+  "subscription_id": "sub_0v1nuhghlh",
+  "date_range": {
+    "start_date": "2024-07-01T00:00:00+00:00",
+    "end_date": "2024-08-31T23:59:59+00:00",
+    "date_range_formatted": "Jul 01, 2024 \u2013 Aug 31, 2024"
+  },
+  "activity_breakdown": [],
+  "total_credits_used": 0
+}

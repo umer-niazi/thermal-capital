@@ -43,9 +43,16 @@ class FortyGuardClient:
         api_key: str | None = None,
         base_url: str | None = None,
         timeout: float = 60.0,
+        use_mock: bool | None = None,
     ) -> None:
+        if use_mock is None:
+            mock_env = os.getenv("USE_MOCK_API", "").strip().lower()
+            self.use_mock = mock_env in ("true", "1", "yes")
+        else:
+            self.use_mock = use_mock
+
         self.api_key = api_key or os.getenv("FORTYGUARD_API_KEY")
-        if not self.api_key:
+        if not self.use_mock and not self.api_key:
             raise FortyGuardError(
                 "No API key provided. Pass api_key=... or set FORTYGUARD_API_KEY in your .env file."
             )
@@ -53,8 +60,12 @@ class FortyGuardClient:
         self.timeout = timeout
         self._session = requests.Session()
         self._session.headers.update(
-            {"api-key": self.api_key, "Content-Type": "application/json"}
+            {"api-key": self.api_key or "offline-mock-key", "Content-Type": "application/json"}
         )
+        self._mock_store = None
+        if self.use_mock:
+            from .mock import get_mock_store
+            self._mock_store = get_mock_store()
 
     # ------------------------------------------------------------------ core
 
@@ -85,6 +96,11 @@ class FortyGuardClient:
         the activity propagates. That is surfaced as ``ActivityNotReadyError`` so
         callers (``wait_for``) can retry instead of failing.
         """
+        if self.use_mock or str(activity_id).startswith("mock-"):
+            from .mock import get_mock_store
+            store = self._mock_store or get_mock_store()
+            return store.get_status(activity_id)
+
         self._session.cookies.clear()
         resp = self._session.get(
             f"{self.base_url}/v1/status/{activity_id}", timeout=self.timeout
@@ -111,6 +127,10 @@ class FortyGuardClient:
 
         Returns the ``result`` payload on success. Raises on failure or timeout.
         """
+        if self.use_mock or str(activity_id).startswith("mock-"):
+            data = self.get_status(activity_id)
+            return data.get("result", data)
+
         deadline = time.monotonic() + timeout
         while True:
             try:
@@ -254,6 +274,20 @@ class FortyGuardClient:
         if direction is not None:
             payload["direction"] = direction
 
+        if self.use_mock:
+            from .mock import get_mock_store
+            store = self._mock_store or get_mock_store()
+            return store.create_heatmap(
+                polygon_aoi=polygon_aoi,
+                start_date=start_date,
+                filter_type=filter_type,
+                granularity=granularity,
+                analytic_type=analytic_type,
+                threshold=threshold,
+                direction=direction,
+                wait=wait,
+            )
+
         if not wait:
             return self._submit("/v1/heatmap", payload)
         return self._submit_and_wait(
@@ -291,6 +325,18 @@ class FortyGuardClient:
             "date_time": date_time,
             "granularity": granularity,
         }
+        if self.use_mock:
+            from .mock import get_mock_store
+            store = self._mock_store or get_mock_store()
+            return store.satellite_segmentation(
+                latitude=latitude,
+                longitude=longitude,
+                start_date=start_date,
+                filter_type=filter_type,
+                granularity=granularity,
+                wait=wait,
+            )
+
         if not wait:
             return self._submit("/v1/satellite", payload)
         return self._submit_and_wait(
@@ -312,6 +358,18 @@ class FortyGuardClient:
         verbose: bool = True,
     ) -> dict | str:
         """POST /v1/streetview — segmentation of a ground-level street view (Premium)."""
+        if self.use_mock:
+            from .mock import get_mock_store
+            store = self._mock_store or get_mock_store()
+            return store.street_view_segmentation(
+                latitude=latitude,
+                longitude=longitude,
+                vertical_angle=vertical_angle,
+                horizontal_angle=horizontal_angle,
+                back_view=back_view,
+                wait=wait,
+            )
+
         payload = {
             "latitude": latitude,
             "longitude": longitude,
@@ -383,6 +441,20 @@ class FortyGuardClient:
         }
         if analysis is not None:
             payload["analysis"] = analysis
+
+        if self.use_mock:
+            from .mock import get_mock_store
+            store = self._mock_store or get_mock_store()
+            return store.environmental_parameters(
+                latitude=latitude,
+                longitude=longitude,
+                temperature=temperature,
+                start_date=start_date,
+                filter_type=filter_type,
+                analysis=analysis,
+                wait=wait,
+            )
+
         if not wait:
             return self._submit("/v1/env_params", payload)
         return self._submit_and_wait(
@@ -432,6 +504,17 @@ class FortyGuardClient:
             "date": date,
             "analysis": analysis_list,
         }
+        if self.use_mock:
+            target = Path(output_path) if output_path else (
+                Path("outputs") / f"heat_intelligence_mock.pdf"
+            )
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if not target.exists():
+                target.write_bytes(b"%PDF-1.4 Mock Heat Intelligence Report generated offline\n%%EOF\n")
+            if verbose:
+                print(f"[MOCK FortyGuard API] Saved offline mock heat intelligence report to {target}")
+            return target
+
         activity_id = self._submit("/v1/heat_intelligence", payload)
         if verbose:
             print(f"Submitted -> activity_id={activity_id}")
@@ -515,6 +598,11 @@ class FortyGuardClient:
 
     def fetch_api_key_usage(self) -> dict:
         """POST /v1/system/fetch-api-key-usage — current billing cycle summary."""
+        if self.use_mock:
+            from .mock import get_mock_store
+            store = self._mock_store or get_mock_store()
+            return store.fetch_api_key_usage()
+
         body = self._request(
             "POST",
             "/v1/system/fetch-api-key-usage",
@@ -528,6 +616,11 @@ class FortyGuardClient:
         ``start_date``/``end_date`` accept ``YYYY-MM-DD`` (we format to ISO)
         or already-ISO strings (passed through).
         """
+        if self.use_mock:
+            from .mock import get_mock_store
+            store = self._mock_store or get_mock_store()
+            return store.fetch_api_key_custom_usage(start_date, end_date)
+
         def _to_iso(value: str, end_of_day: bool) -> str:
             if "T" in value:
                 return value

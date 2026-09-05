@@ -1,0 +1,325 @@
+{
+  "generator": "scripts/capture_fixtures.py",
+  "timestamp": "2026-09-05T17:26:13Z",
+  "total_files": 53,
+  "regions": {
+    "phoenix": {
+      "name": "Phoenix, AZ",
+      "climate": "Hot Desert (BWh)",
+      "coordinates": {
+        "lat": 33.4484,
+        "lon": -112.074
+      },
+      "bbox": [
+        -112.11,
+        33.43,
+        -112.04,
+        33.47
+      ]
+    },
+    "nyc": {
+      "name": "New York City, NY",
+      "climate": "Humid Subtropical / Dense Urban Canyon (Cfa)",
+      "coordinates": {
+        "lat": 40.7128,
+        "lon": -74.006
+      },
+      "bbox": [
+        -74.259,
+        40.477,
+        -73.7,
+        40.917
+      ]
+    },
+    "dallas": {
+      "name": "Dallas-Fort Worth, TX",
+      "climate": "Humid Subtropical Sprawl (Cfa)",
+      "coordinates": {
+        "lat": 32.7767,
+        "lon": -96.797
+      },
+      "bbox": [
+        -96.85,
+        32.74,
+        -96.75,
+        32.82
+      ]
+    },
+    "houston": {
+      "name": "Houston, TX",
+      "climate": "Humid Subtropical Gulf Coast (Cfa)",
+      "coordinates": {
+        "lat": 29.7604,
+        "lon": -95.3698
+      },
+      "bbox": [
+        -95.42,
+        29.72,
+        -95.32,
+        29.8
+      ]
+    },
+    "austin": {
+      "name": "Austin, TX",
+      "climate": "Subtropical Hill Country (Cfa)",
+      "coordinates": {
+        "lat": 30.2672,
+        "lon": -97.7431
+      },
+      "bbox": [
+        -97.8,
+        30.23,
+        -97.7,
+        30.31
+      ]
+    },
+    "el_paso": {
+      "name": "El Paso, TX",
+      "climate": "Cold Semi-Arid / High Desert (BSk)",
+      "coordinates": {
+        "lat": 31.7619,
+        "lon": -106.485
+      },
+      "bbox": [
+        -106.52,
+        31.73,
+        -106.44,
+        31.8
+      ]
+    },
+    "san_jose": {
+      "name": "San Jose, CA",
+      "climate": "Warm-Summer Mediterranean / Silicon Valley (Csb)",
+      "coordinates": {
+        "lat": 37.3382,
+        "lon": -121.8863
+      },
+      "bbox": [
+        -121.93,
+        37.3,
+        -121.85,
+        37.37
+      ]
+    },
+    "miami": {
+      "name": "Miami, FL",
+      "climate": "Tropical Monsoon Coastal (Am)",
+      "coordinates": {
+        "lat": 25.7617,
+        "lon": -80.1918
+      },
+      "bbox": [
+        -80.23,
+        25.73,
+        -80.16,
+        25.8
+      ]
+    }
+  },
+  "fixtures": {
+    "api_custom_usage.json": {
+      "size_bytes": 293,
+      "path": "fixtures/fortyguard/api_custom_usage.json"
+    },
+    "api_usage_summary.json": {
+      "size_bytes": 1459,
+      "path": "fixtures/fortyguard/api_usage_summary.json"
+    },
+    "austin.json": {
+      "size_bytes": 1541035,
+      "path": "fixtures/fortyguard/austin.json"
+    },
+    "austin_env_params.json": {
+      "size_bytes": 8947,
+      "path": "fixtures/fortyguard/austin_env_params.json"
+    },
+    "austin_exceedance.json": {
+      "size_bytes": 421509,
+      "path": "fixtures/fortyguard/austin_exceedance.json"
+    },
+    "austin_persistence.json": {
+      "size_bytes": 422924,
+      "path": "fixtures/fortyguard/austin_persistence.json"
+    },
+    "austin_tcm.json": {
+      "size_bytes": 475462,
+      "path": "fixtures/fortyguard/austin_tcm.json"
+    },
+    "dallas.json": {
+      "size_bytes": 1346704,
+      "path": "fixtures/fortyguard/dallas.json"
+    },
+    "dallas_env_params.json": {
+      "size_bytes": 8946,
+      "path": "fixtures/fortyguard/dallas_env_params.json"
+    },
+    "dallas_exceedance.json": {
+      "size_bytes": 367848,
+      "path": "fixtures/fortyguard/dallas_exceedance.json"
+    },
+    "dallas_persistence.json": {
+      "size_bytes": 367849,
+      "path": "fixtures/fortyguard/dallas_persistence.json"
+    },
+    "dallas_tcm.json": {
+      "size_bytes": 415956,
+      "path": "fixtures/fortyguard/dallas_tcm.json"
+    },
+    "el_paso.json": {
+      "size_bytes": 1584326,
+      "path": "fixtures/fortyguard/el_paso.json"
+    },
+    "el_paso_env_params.json": {
+      "size_bytes": 8942,
+      "path": "fixtures/fortyguard/el_paso_env_params.json"
+    },
+    "el_paso_exceedance.json": {
+      "size_bytes": 434286,
+      "path": "fixtures/fortyguard/el_paso_exceedance.json"
+    },
+    "el_paso_persistence.json": {
+      "size_bytes": 434287,
+      "path": "fixtures/fortyguard/el_paso_persistence.json"
+    },
+    "el_paso_tcm.json": {
+      "size_bytes": 489465,
+      "path": "fixtures/fortyguard/el_paso_tcm.json"
+    },
+    "houston.json": {
+      "size_bytes": 1310518,
+      "path": "fixtures/fortyguard/houston.json"
+    },
+    "houston_env_params.json": {
+      "size_bytes": 8966,
+      "path": "fixtures/fortyguard/houston_env_params.json"
+    },
+    "houston_exceedance.json": {
+      "size_bytes": 357595,
+      "path": "fixtures/fortyguard/houston_exceedance.json"
+    },
+    "houston_persistence.json": {
+      "size_bytes": 358986,
+      "path": "fixtures/fortyguard/houston_persistence.json"
+    },
+    "houston_tcm.json": {
+      "size_bytes": 404435,
+      "path": "fixtures/fortyguard/houston_tcm.json"
+    },
+    "miami.json": {
+      "size_bytes": 136330,
+      "path": "fixtures/fortyguard/miami.json"
+    },
+    "miami_env_params.json": {
+      "size_bytes": 8974,
+      "path": "fixtures/fortyguard/miami_env_params.json"
+    },
+    "miami_env_params_august.json": {
+      "size_bytes": 8956,
+      "path": "fixtures/fortyguard/miami_env_params_august.json"
+    },
+    "miami_tcm.json": {
+      "size_bytes": 108461,
+      "path": "fixtures/fortyguard/miami_tcm.json"
+    },
+    "nyc_citywide_exceedance.json": {
+      "size_bytes": 68039641,
+      "path": "fixtures/fortyguard/nyc_citywide_exceedance.json"
+    },
+    "nyc_citywide_persistence.json": {
+      "size_bytes": 68027784,
+      "path": "fixtures/fortyguard/nyc_citywide_persistence.json"
+    },
+    "nyc_citywide_tcm.json": {
+      "size_bytes": 75189379,
+      "path": "fixtures/fortyguard/nyc_citywide_tcm.json"
+    },
+    "nyc_env_params.json": {
+      "size_bytes": 9920,
+      "path": "fixtures/fortyguard/nyc_env_params.json"
+    },
+    "nyc_env_params_august.json": {
+      "size_bytes": 8957,
+      "path": "fixtures/fortyguard/nyc_env_params_august.json"
+    },
+    "nyc_exceedance.json": {
+      "size_bytes": 380876,
+      "path": "fixtures/fortyguard/nyc_exceedance.json"
+    },
+    "nyc_persistence.json": {
+      "size_bytes": 380452,
+      "path": "fixtures/fortyguard/nyc_persistence.json"
+    },
+    "nyc_satellite.json": {
+      "size_bytes": 667596,
+      "path": "fixtures/fortyguard/nyc_satellite.json"
+    },
+    "nyc_summer.json": {
+      "size_bytes": 2059343,
+      "path": "fixtures/fortyguard/nyc_summer.json"
+    },
+    "nyc_tcm.json": {
+      "size_bytes": 428545,
+      "path": "fixtures/fortyguard/nyc_tcm.json"
+    },
+    "phoenix.json": {
+      "size_bytes": 1130633,
+      "path": "fixtures/fortyguard/phoenix.json"
+    },
+    "phoenix_env_params.json": {
+      "size_bytes": 8957,
+      "path": "fixtures/fortyguard/phoenix_env_params.json"
+    },
+    "phoenix_env_params_august.json": {
+      "size_bytes": 8951,
+      "path": "fixtures/fortyguard/phoenix_env_params_august.json"
+    },
+    "phoenix_exceedance.json": {
+      "size_bytes": 170729,
+      "path": "fixtures/fortyguard/phoenix_exceedance.json"
+    },
+    "phoenix_persistence.json": {
+      "size_bytes": 169946,
+      "path": "fixtures/fortyguard/phoenix_persistence.json"
+    },
+    "phoenix_satellite.json": {
+      "size_bytes": 498196,
+      "path": "fixtures/fortyguard/phoenix_satellite.json"
+    },
+    "phoenix_tcm.json": {
+      "size_bytes": 195412,
+      "path": "fixtures/fortyguard/phoenix_tcm.json"
+    },
+    "san_jose.json": {
+      "size_bytes": 1846402,
+      "path": "fixtures/fortyguard/san_jose.json"
+    },
+    "san_jose_env_params.json": {
+      "size_bytes": 8034,
+      "path": "fixtures/fortyguard/san_jose_env_params.json"
+    },
+    "san_jose_exceedance.json": {
+      "size_bytes": 263280,
+      "path": "fixtures/fortyguard/san_jose_exceedance.json"
+    },
+    "san_jose_persistence.json": {
+      "size_bytes": 262964,
+      "path": "fixtures/fortyguard/san_jose_persistence.json"
+    },
+    "san_jose_portfolio_tcm.json": {
+      "size_bytes": 1987312,
+      "path": "fixtures/fortyguard/san_jose_portfolio_tcm.json"
+    },
+    "san_jose_satellite.json": {
+      "size_bytes": 196703,
+      "path": "fixtures/fortyguard/san_jose_satellite.json"
+    },
+    "san_jose_streetview.json": {
+      "size_bytes": 672164,
+      "path": "fixtures/fortyguard/san_jose_streetview.json"
+    },
+    "san_jose_tcm.json": {
+      "size_bytes": 298714,
+      "path": "fixtures/fortyguard/san_jose_tcm.json"
+    }
+  }
+}
