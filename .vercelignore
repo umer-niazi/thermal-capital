@@ -1,16 +1,11 @@
 # =============================================================================
 # Thermal Capital — Vercel Function Bundle Exclusion (.vercelignore)
 # =============================================================================
-# Exclude build artifacts, dev dependencies, notebooks, and frontend source
-# to ensure serverless function bundle stays well under the 500 MB limit.
+# Exclude build artifacts, dev dependencies, notebooks, and test caches.
+# NOTE: Do NOT ignore frontend/ here because Vercel requires frontend/package.json
+# to execute `npm --prefix frontend install` and `npm --prefix frontend run build`.
 
-# Frontend source & dependencies (Static frontend is built to frontend/dist)
-frontend/
-node_modules/
-package-lock.json
-.vite/
-
-# Development virtual environments & cache
+# Local development virtual environments & cache
 .venv/
 venv/
 env/
