@@ -256,16 +256,8 @@ def main() -> None:
     if nyc_env:
         save_json(nyc_env, FIXTURES_DIR / "nyc_env_params.json")
 
-    # Full citywide probe data
-    nyc_city_tcm = load_json_safe(DATA_DIR / "probes" / "nyc_citywide_tcm.json")
-    if nyc_city_tcm:
-        save_json(nyc_city_tcm, FIXTURES_DIR / "nyc_citywide_tcm.json")
-    nyc_city_exc = load_json_safe(DATA_DIR / "probes" / "nyc_citywide_exceedance.json")
-    if nyc_city_exc:
-        save_json(nyc_city_exc, FIXTURES_DIR / "nyc_citywide_exceedance.json")
-    nyc_city_per = load_json_safe(DATA_DIR / "probes" / "nyc_citywide_persistence.json")
-    if nyc_city_per:
-        save_json(nyc_city_per, FIXTURES_DIR / "nyc_citywide_persistence.json")
+    # Full citywide probe data is maintained in data/probes/nyc_citywide_*.json
+    # to prevent duplicate bundling bloat in fixtures/fortyguard/.
 
     # Capture August time-point for NYC if client is live
     if client:

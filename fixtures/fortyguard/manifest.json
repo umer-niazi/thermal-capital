@@ -1,7 +1,7 @@
 {
   "generator": "scripts/capture_fixtures.py",
-  "timestamp": "2026-09-05T17:26:13Z",
-  "total_files": 53,
+  "timestamp": "2026-09-25T10:14:39Z",
+  "total_files": 49,
   "regions": {
     "phoenix": {
       "name": "Phoenix, AZ",
@@ -221,20 +221,8 @@
       "size_bytes": 108461,
       "path": "fixtures/fortyguard/miami_tcm.json"
     },
-    "nyc_citywide_exceedance.json": {
-      "size_bytes": 68039641,
-      "path": "fixtures/fortyguard/nyc_citywide_exceedance.json"
-    },
-    "nyc_citywide_persistence.json": {
-      "size_bytes": 68027784,
-      "path": "fixtures/fortyguard/nyc_citywide_persistence.json"
-    },
-    "nyc_citywide_tcm.json": {
-      "size_bytes": 75189379,
-      "path": "fixtures/fortyguard/nyc_citywide_tcm.json"
-    },
     "nyc_env_params.json": {
-      "size_bytes": 9920,
+      "size_bytes": 8983,
       "path": "fixtures/fortyguard/nyc_env_params.json"
     },
     "nyc_env_params_august.json": {

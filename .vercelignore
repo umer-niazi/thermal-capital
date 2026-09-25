@@ -1,0 +1,36 @@
+# =============================================================================
+# Thermal Capital — Vercel Function Bundle Exclusion (.vercelignore)
+# =============================================================================
+# Exclude build artifacts, dev dependencies, notebooks, and frontend source
+# to ensure serverless function bundle stays well under the 500 MB limit.
+
+# Frontend source & dependencies (Static frontend is built to frontend/dist)
+frontend/
+node_modules/
+package-lock.json
+.vite/
+
+# Development virtual environments & cache
+.venv/
+venv/
+env/
+.pytest_cache/
+data/cache/
+*.pyc
+__pycache__/
+
+# Version control & CI
+.git/
+.github/
+
+# Jupyter Notebooks & exploratory scripts
+notebooks/
+scripts/
+docs/
+assets/
+outputs/
+.scratch/
+
+# Backend test suite & dev requirements
+backend/tests/
+requirements-dev.txt
